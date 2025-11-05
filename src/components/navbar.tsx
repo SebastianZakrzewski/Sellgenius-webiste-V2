@@ -106,18 +106,46 @@ export function Navbar() {
         className={cn(
           "fixed top-0 left-0 right-0 z-[60] transition-all duration-300",
           isScrolled
-            ? "bg-background/80 backdrop-blur-md border-b border-border shadow-sm"
+            ? "bg-background/80 backdrop-blur-md shadow-sm"
             : "bg-background"
         )}
       >
         <div className="flex items-center justify-between h-16">
           {/* Logo and Menu Toggle */}
-          <div className="flex items-center gap-4 pl-6 lg:pl-8">
+          <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="text-xl font-semibold text-foreground hover:opacity-80 transition-opacity"
+              className="relative flex items-center"
             >
-              SellGenius
+              {/* Logo SVG - widoczne po scrollowaniu */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isScrolled ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+                className={cn(
+                  "absolute inset-0 flex items-center",
+                  isScrolled ? "pointer-events-auto" : "pointer-events-none"
+                )}
+              >
+                <img
+                  src="/images/sellgenius.svg"
+                  alt="SellGenius"
+                  className="w-48 h-48"
+                />
+              </motion.div>
+              
+              {/* Tekst SellGenius - widoczny na początku */}
+              <motion.span
+                initial={{ opacity: 1 }}
+                animate={{ opacity: isScrolled ? 0 : 1 }}
+                transition={{ duration: 0.3 }}
+                className={cn(
+                  "text-xl font-semibold text-foreground whitespace-nowrap pl-6 lg:pl-8",
+                  isScrolled ? "pointer-events-none" : "pointer-events-auto"
+                )}
+              >
+                SellGenius
+              </motion.span>
             </Link>
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
