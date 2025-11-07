@@ -20,22 +20,42 @@ export default function Home() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex justify-center -mb-12"
+              className="flex justify-center -mb-12 relative"
             >
-              <Image
-                src="/images/image.png"
-                alt="Hero Image"
-                width={400}
-                height={300}
-                className="object-contain"
-                priority
-              />
+              <div className="relative">
+                <Image
+                  src="/images/image.png"
+                  alt="Hero Image"
+                  width={400}
+                  height={300}
+                  className="object-contain"
+                  priority
+                />
+                {/* Gradient overlay w kolorach napisów */}
+                <div 
+                  className="absolute inset-0 bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] mix-blend-lighten opacity-100"
+                  style={{
+                    maskImage: 'url(/images/image.png)',
+                    maskSize: 'contain',
+                    maskRepeat: 'no-repeat',
+                    maskPosition: 'center',
+                    WebkitMaskImage: 'url(/images/image.png)',
+                    WebkitMaskSize: 'contain',
+                    WebkitMaskRepeat: 'no-repeat',
+                    WebkitMaskPosition: 'center',
+                    filter: 'brightness(1.2)',
+                  }}
+                />
+              </div>
             </motion.div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-8">
-              <span className="text-[#FFFFFF]">Sztuczna inteligencja, która </span>
-              <span className="bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] bg-clip-text text-transparent">
-                sprzedaje, wspiera i rozwija Twój biznes
-              </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-8 leading-tight">
+              <div className="text-[#FFFFFF] mb-2">Sztuczna inteligencja, która</div>
+              <div className="bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] bg-clip-text text-transparent mb-2">
+                sprzedaje, wspiera i rozwija Twój
+              </div>
+              <div className="bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] bg-clip-text text-transparent">
+                biznes
+              </div>
             </h1>
             <p className="text-lg md:text-xl text-center text-[#BBBBBB] mb-8 max-w-3xl mx-auto font-normal">
               Dzięki zaawansowanej sztucznej inteligencji Twój biznes może osiągnąć niespotykane dotąd wyniki
