@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -15,7 +16,22 @@ export default function Home() {
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="flex justify-center -mb-12"
+            >
+              <Image
+                src="/images/image.png"
+                alt="Hero Image"
+                width={400}
+                height={300}
+                className="object-contain"
+                priority
+              />
+            </motion.div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-8">
               <span className="text-[#FFFFFF]">Sztuczna inteligencja, która </span>
               <span className="bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] bg-clip-text text-transparent">
                 sprzedaje, wspiera i rozwija Twój biznes
