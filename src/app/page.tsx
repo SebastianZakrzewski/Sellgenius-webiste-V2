@@ -1,68 +1,42 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Sparkles, Zap, Palette, Code } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Home() {
   return (
     <main className="flex flex-col">
-      {/* Główna sekcja */}
-      <section className="flex min-h-screen flex-col items-center justify-center p-24 pt-32">
-        <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm">
+      {/* Sekcja Hero */}
+      <section className="flex min-h-screen flex-col items-center justify-center p-24 pt-32 bg-[#000000]">
+        <div className="z-10 max-w-5xl w-full items-center justify-between">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
+            className="text-center"
           >
-            <h1 className="text-4xl font-bold text-center mb-4">
-              Welcome to SellGenius Website V2
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-6">
+              <span className="text-[#FFFFFF]">Sztuczna inteligencja, która </span>
+              <span className="bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] bg-clip-text text-transparent">
+                sprzedaje, wspiera i rozwija Twój biznes
+              </span>
             </h1>
-            <p className="text-center text-muted-foreground mb-8">
-              Next.js 14 + Tailwind CSS + shadcn/ui + Radix UI + Framer Motion + Lucide Icons
+            <p className="text-lg md:text-xl text-center text-[#BBBBBB] mb-8 max-w-3xl mx-auto font-normal">
+              Dzięki zaawansowanej sztucznej inteligencji Twój biznes może osiągnąć niespotykane dotąd wyniki
             </p>
             
-            <div className="flex flex-wrap justify-center gap-4 mb-8">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex justify-center"
+            >
+              <Button 
+                size="lg" 
+                className="text-lg px-8 py-6 bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] hover:from-[#22D3EE] hover:to-[#3B82F6] text-[#FFFFFF] border-0 shadow-lg font-normal rounded-md"
               >
-                <Button variant="default" className="gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  Default Button
-                </Button>
-              </motion.div>
-              
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button variant="outline" className="gap-2">
-                  <Zap className="h-4 w-4" />
-                  Outline Button
-                </Button>
-              </motion.div>
-              
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button variant="secondary" className="gap-2">
-                  <Palette className="h-4 w-4" />
-                  Secondary Button
-                </Button>
-              </motion.div>
-              
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button variant="ghost" className="gap-2">
-                  <Code className="h-4 w-4" />
-                  Ghost Button
-                </Button>
-              </motion.div>
-            </div>
+                Rozpocznij teraz
+              </Button>
+            </motion.div>
           </motion.div>
         </div>
       </section>
