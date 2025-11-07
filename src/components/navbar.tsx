@@ -117,35 +117,10 @@ export function Navbar() {
               href="/"
               className="relative flex items-center"
             >
-              {/* Logo SVG - widoczne po scrollowaniu */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: isScrolled ? 1 : 0 }}
-                transition={{ duration: 0.3 }}
-                className={cn(
-                  "absolute inset-0 flex items-center",
-                  isScrolled ? "pointer-events-auto" : "pointer-events-none"
-                )}
-              >
-                <img
-                  src="/images/sellgenius.svg"
-                  alt="SellGenius"
-                  className="w-48 h-48"
-                />
-              </motion.div>
-              
-              {/* Tekst SellGenius - widoczny na początku */}
-              <motion.span
-                initial={{ opacity: 1 }}
-                animate={{ opacity: isScrolled ? 0 : 1 }}
-                transition={{ duration: 0.3 }}
-                className={cn(
-                  "text-xl font-semibold text-foreground whitespace-nowrap pl-6 lg:pl-8",
-                  isScrolled ? "pointer-events-none" : "pointer-events-auto"
-                )}
-              >
+              {/* Tekst SellGenius */}
+              <span className="text-xl font-semibold text-foreground whitespace-nowrap pl-6 lg:pl-8">
                 SellGenius
-              </motion.span>
+              </span>
             </Link>
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -166,9 +141,11 @@ export function Navbar() {
 
           {/* Desktop CTA */}
           <div className="flex items-center gap-4 pr-6 lg:pr-8">
-            <Button variant="ghost" asChild>
-              <Link href="/login">Log in</Link>
-            </Button>
+            <button
+              className="bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] hover:from-[#22D3EE] hover:to-[#3B82F6] text-[#1e40af] px-6 py-2 rounded-lg font-semibold transition-all duration-300 uppercase mt-4"
+            >
+              POROZMAWIAJMY
+            </button>
           </div>
         </div>
       </motion.nav>
@@ -255,11 +232,12 @@ export function Navbar() {
 
                 {/* Sidebar Footer */}
                 <div className="p-4 border-t border-border">
-                  <Button variant="ghost" className="w-full justify-start" asChild>
-                    <Link href="/login" onClick={closeSidebar}>
-                      Log in
-                    </Link>
-                  </Button>
+                  <button
+                    onClick={closeSidebar}
+                    className="w-full bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] hover:from-[#22D3EE] hover:to-[#3B82F6] text-[#1e40af] px-6 py-2 rounded-lg font-semibold transition-all duration-300 uppercase"
+                  >
+                    POROZMAWIAJMY
+                  </button>
                 </div>
               </div>
             </motion.div>
