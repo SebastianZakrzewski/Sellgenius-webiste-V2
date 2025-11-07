@@ -32,7 +32,7 @@ export default function Home() {
             >
               <Button 
                 size="lg" 
-                className="text-lg px-8 py-6 bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] hover:from-[#22D3EE] hover:to-[#3B82F6] text-[#FFFFFF] border-0 shadow-lg font-normal rounded-md"
+                className="text-lg px-8 py-6 bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] hover:from-[#22D3EE] hover:to-[#3B82F6] text-[#000000] border-0 shadow-lg font-normal rounded-md"
               >
                 Rozpocznij teraz
               </Button>
