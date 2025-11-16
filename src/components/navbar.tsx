@@ -224,7 +224,7 @@ export function Navbar() {
             >
               <div className="flex flex-col h-full">
                 {/* Sidebar Navigation */}
-                <nav className="flex-1 p-4 pt-6">
+                <nav className="flex-1 p-4 pt-32">
                   <ul className="space-y-1">
                     {navItems.map((item) => (
                       <li key={item.label}>
