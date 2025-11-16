@@ -7,8 +7,8 @@ export default function Home() {
   return (
     <main className="flex flex-col">
       {/* Hero Section */}
-      <section className="min-h-screen bg-[#000000] relative flex flex-col items-center justify-center p-8">
-        <div className="flex flex-col items-center gap-2" style={{ marginTop: '-20vh' }}>
+      <section className="min-h-screen bg-[#000000] relative flex flex-col items-center justify-center p-8 pt-[1.6rem]">
+        <div className="flex flex-col items-center gap-2" style={{ marginTop: '-24vh' }}>
           {/* Logo with letter G overlay */}
           <div className="relative w-full max-w-xl" style={{ height: '30vh' }}>
             <Image

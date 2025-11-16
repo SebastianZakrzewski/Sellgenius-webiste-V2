@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavbar } from "./navbar-context";
@@ -159,18 +159,36 @@ export function Navbar() {
             </Link>
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className={cn(
-                "p-2 text-foreground hover:bg-accent rounded-md transition-colors",
-                sidebarOpen && "bg-accent"
-              )}
+              className="group"
+              style={{ marginTop: '24px' }}
               aria-label="Toggle navigation sidebar"
               aria-expanded={sidebarOpen}
             >
-              {sidebarOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
+              <svg className="h-7 w-7 transition-colors duration-300" viewBox="0 0 24 24" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                {/* Battery body - unified rounded rectangle */}
+                <rect 
+                  x="2" 
+                  y="7" 
+                  width="16" 
+                  height="10" 
+                  rx="2" 
+                  ry="2" 
+                  stroke="#808080"
+                  fill="none"
+                  className="group-hover:stroke-white transition-all duration-300"
+                />
+                {/* Charge indicator bar - unified rounded rectangle */}
+                <rect 
+                  x={sidebarOpen ? "12" : "4"} 
+                  y="9" 
+                  width="1.5" 
+                  height="6" 
+                  rx="0.75" 
+                  ry="0.75"
+                  fill="#808080"
+                  className="group-hover:fill-white transition-all duration-300"
+                />
+              </svg>
             </button>
           </div>
 
