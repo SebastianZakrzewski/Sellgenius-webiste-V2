@@ -177,7 +177,7 @@ export function Navbar() {
           {/* Desktop CTA */}
           <div className="flex items-center gap-4 pr-6 lg:pr-8">
             <button
-              className="bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] hover:from-[#22D3EE] hover:to-[#3B82F6] text-[#1e40af] px-6 py-2 rounded-lg font-semibold transition-all duration-300 uppercase mt-4"
+              className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 hover:from-cyan-500 hover:via-blue-600 hover:to-indigo-700 text-black px-6 py-2 rounded-lg font-semibold transition-all duration-300 uppercase mt-4"
             >
               POROZMAWIAJMY
             </button>
@@ -269,7 +269,7 @@ export function Navbar() {
                 <div className="p-4 border-t border-border">
                   <button
                     onClick={closeSidebar}
-                    className="w-full bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] hover:from-[#22D3EE] hover:to-[#3B82F6] text-[#1e40af] px-6 py-2 rounded-lg font-semibold transition-all duration-300 uppercase"
+                    className="w-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 hover:from-cyan-500 hover:via-blue-600 hover:to-indigo-700 text-black px-6 py-2 rounded-lg font-semibold transition-all duration-300 uppercase"
                   >
                     POROZMAWIAJMY
                   </button>

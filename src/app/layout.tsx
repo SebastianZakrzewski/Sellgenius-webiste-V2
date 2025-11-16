@@ -26,10 +26,10 @@ export default function RootLayout({
           <LayoutContent>{children}</LayoutContent>
           {/* Floating Chat Button */}
           <button
-            className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 z-50"
+            className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 hover:from-cyan-500 hover:via-blue-600 hover:to-indigo-700 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 z-50"
             aria-label="Chat"
           >
-            <MessageCircle className="w-6 h-6 text-[#000000]" />
+            <MessageCircle className="w-6 h-6 text-white" />
           </button>
         </NavbarProvider>
       </body>
