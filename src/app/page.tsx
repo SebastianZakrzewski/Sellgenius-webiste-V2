@@ -1,80 +1,70 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export default function Home() {
   return (
     <main className="flex flex-col">
-      {/* Sekcja Hero */}
-      <section className="flex min-h-screen flex-col items-center justify-center p-24 pt-32 bg-[#000000]">
-        <div className="z-10 max-w-5xl w-full items-center justify-between">
-          <motion.div
+      {/* Hero Section */}
+      <section className="min-h-screen bg-[#000000] relative flex flex-col items-center justify-center p-8">
+        <div className="flex flex-col items-center gap-4">
+          {/* Logo with letter G overlay */}
+          <div className="relative w-full max-w-xl" style={{ height: '30vh' }}>
+            <Image
+              src="/images/hero.png"
+              alt="Hero"
+              fill
+              className="object-contain"
+              priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+            />
+            {/* Letter G in center */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <span className="text-3xl md:text-4xl font-bold text-white">G</span>
+            </motion.div>
+          </div>
+
+          {/* SELLGENIUS text */}
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center"
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="text-5xl md:text-6xl lg:text-7xl font-bold uppercase text-center"
+            style={{ 
+              fontFamily: '"Cassio BC", sans-serif',
+              color: '#FFFFFF',
+              letterSpacing: '0.15em'
+            }}
           >
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex justify-center -mb-12 relative"
-            >
-              <div className="relative">
-                <Image
-                  src="/images/image.png"
-                  alt="Hero Image"
-                  width={400}
-                  height={300}
-                  className="object-contain"
-                  priority
-                />
-                {/* Gradient overlay w kolorach napisów */}
-                <div 
-                  className="absolute inset-0 bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] mix-blend-lighten opacity-100"
-                  style={{
-                    maskImage: 'url(/images/image.png)',
-                    maskSize: 'contain',
-                    maskRepeat: 'no-repeat',
-                    maskPosition: 'center',
-                    WebkitMaskImage: 'url(/images/image.png)',
-                    WebkitMaskSize: 'contain',
-                    WebkitMaskRepeat: 'no-repeat',
-                    WebkitMaskPosition: 'center',
-                    filter: 'brightness(1.2)',
-                  }}
-                />
-              </div>
-            </motion.div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-8 leading-tight">
-              <div className="text-[#FFFFFF] mb-2">Sztuczna inteligencja, która</div>
-              <div className="bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] bg-clip-text text-transparent mb-2">
-                sprzedaje, wspiera i rozwija Twój
-              </div>
-              <div className="bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] bg-clip-text text-transparent">
-                biznes
-              </div>
-            </h1>
-            <p className="text-lg md:text-xl text-center text-[#BBBBBB] mb-8 max-w-3xl mx-auto font-normal">
-              Dzięki zaawansowanej sztucznej inteligencji Twój biznes może osiągnąć niespotykane dotąd wyniki
-            </p>
-            
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex justify-center"
-            >
-              <Button 
-                size="lg" 
-                className="text-lg px-8 py-6 bg-gradient-to-r from-[#22D3EE] to-[#3B82F6] hover:from-[#22D3EE] hover:to-[#3B82F6] text-[#000000] border-0 shadow-lg font-normal rounded-md"
-              >
-                Rozpocznij teraz
-              </Button>
-            </motion.div>
-          </motion.div>
+            SELLGENIUS
+          </motion.h1>
+
+          {/* INTELIGENCJA DLA BIZNESU text */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.9 }}
+            className="text-xl md:text-2xl lg:text-3xl font-medium uppercase text-center"
+            style={{
+              color: '#4284A8',
+              letterSpacing: '0.4em',
+              textShadow: '0 0 10px rgba(66, 132, 168, 0.5), 0 0 20px rgba(66, 132, 168, 0.3)'
+            }}
+          >
+            INTELIGENCJA DLA BIZNESU.
+          </motion.p>
         </div>
+      </section>
+      {/* Placeholder sections for scrolling */}
+      <section className="min-h-screen bg-[#000000]">
+      </section>
+      <section className="min-h-screen bg-[#000000]">
       </section>
     </main>
   );

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -115,12 +116,46 @@ export function Navbar() {
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="relative flex items-center"
+              className="relative flex items-center justify-center"
+              style={{ height: '192px', width: '100%' }}
             >
-              {/* Tekst SellGenius */}
-              <span className="text-xl font-semibold text-foreground whitespace-nowrap pl-6 lg:pl-8">
-                SellGenius
-              </span>
+              <AnimatePresence mode="wait">
+                {!isScrolled ? (
+                  <motion.span
+                    key="text"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-xl font-semibold text-foreground whitespace-nowrap text-center"
+                    style={{ marginLeft: '24px', marginTop: '24px' }}
+                  >
+                    SellGenius
+                  </motion.span>
+                ) : (
+                  <motion.div
+                    key="logo"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.2 }}
+                    className="relative w-auto"
+                    style={{ height: '64px', marginLeft: '24px', marginTop: '48px' }}
+                  >
+                    <Image
+                      src="/images/logo.png"
+                      alt="SellGenius Logo"
+                      width={2160}
+                      height={576}
+                      className="w-auto object-contain"
+                      style={{ height: '64px' }}
+                      quality={100}
+                      priority
+                      unoptimized
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </Link>
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
