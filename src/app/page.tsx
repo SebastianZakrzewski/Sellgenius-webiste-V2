@@ -8,7 +8,7 @@ export default function Home() {
     <main className="flex flex-col">
       {/* Hero Section */}
       <section className="min-h-screen bg-[#000000] relative flex flex-col items-center justify-center p-8">
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-2" style={{ marginTop: '-20vh' }}>
           {/* Logo with letter G overlay */}
           <div className="relative w-full max-w-xl" style={{ height: '30vh' }}>
             <Image
@@ -26,7 +26,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="absolute inset-0 flex items-center justify-center"
             >
-              <span className="text-3xl md:text-4xl font-bold text-white">G</span>
+              <span className="text-2xl md:text-3xl font-semibold text-white">G</span>
             </motion.div>
           </div>
 
@@ -35,11 +35,11 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-5xl md:text-6xl lg:text-7xl font-bold uppercase text-center"
+            className="text-4xl md:text-5xl lg:text-6xl font-semibold uppercase text-center"
             style={{ 
               fontFamily: '"Cassio BC", sans-serif',
               color: '#FFFFFF',
-              letterSpacing: '0.15em'
+              letterSpacing: '0.2em'
             }}
           >
             SELLGENIUS
@@ -50,10 +50,10 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.9 }}
-            className="text-xl md:text-2xl lg:text-3xl font-medium uppercase text-center"
+            className="text-lg md:text-xl lg:text-2xl font-normal uppercase text-center"
             style={{
               color: '#4284A8',
-              letterSpacing: '0.4em',
+              letterSpacing: '0.5em',
               textShadow: '0 0 10px rgba(66, 132, 168, 0.5), 0 0 20px rgba(66, 132, 168, 0.3)'
             }}
           >
