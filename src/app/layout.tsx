@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/navbar";
+import { Navbar2 } from "@/components/navbar2";
 import { NavbarProvider } from "@/components/navbar-context";
 import { LayoutContent } from "@/components/layout-content";
 import { MessageCircle } from "lucide-react";
@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="pl" className="dark">
       <body className={inter.className}>
         <NavbarProvider>
-          <Navbar />
+          <Navbar2 />
           <LayoutContent>{children}</LayoutContent>
           {/* Floating Chat Button */}
           <button
