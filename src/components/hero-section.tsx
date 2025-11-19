@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { ArrowRight, ArrowUpRight, Shield, Zap, TrendingUp } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 
 // TypeScript types
 type NeuralNode = {
@@ -50,15 +50,35 @@ const GRADIENT_COLORS = {
 export function HeroSection() {
   const [windowWidth, setWindowWidth] = useState(1920);
 
+  // Mouse position state for Parallax
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springConfig = { damping: 25, stiffness: 120 };
+  const mouseXSpring = useSpring(mouseX, springConfig);
+  const mouseYSpring = useSpring(mouseY, springConfig);
+
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e;
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      mouseX.set((clientX - centerX) / centerX);
+      mouseY.set((clientY - centerY) / centerY);
+    };
     
     handleResize(); // Set initial value
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    window.addEventListener("mousemove", handleMouseMove);
+    
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [mouseX, mouseY]);
 
   const stats = [
     { value: "500+", label: "firm ufa nam" },
@@ -185,114 +205,167 @@ export function HeroSection() {
     ];
   }, [windowWidth]);
 
+  // Parallax transform values
+  // Layer 0 (Input) - moves slightly
+  const layer0X = useTransform(mouseXSpring, [-1, 1], [20, -20]);
+  const layer0Y = useTransform(mouseYSpring, [-1, 1], [20, -20]);
+  
+  // Layer 1 (Hidden 1) - moves more
+  const layer1X = useTransform(mouseXSpring, [-1, 1], [40, -40]);
+  const layer1Y = useTransform(mouseYSpring, [-1, 1], [40, -40]);
+  
+  // Layer 2 (Hidden 2) - moves even more
+  const layer2X = useTransform(mouseXSpring, [-1, 1], [60, -60]);
+  const layer2Y = useTransform(mouseYSpring, [-1, 1], [60, -60]);
+  
+  // Layer 3 (Output) - moves the most (foreground)
+  const layer3X = useTransform(mouseXSpring, [-1, 1], [80, -80]);
+  const layer3Y = useTransform(mouseYSpring, [-1, 1], [80, -80]);
+
+  // Helper to get transform for a node/layer
+  const getLayerTransform = (layer: number) => {
+    switch(layer) {
+      case 0: return { x: layer0X, y: layer0Y };
+      case 1: return { x: layer1X, y: layer1Y };
+      case 2: return { x: layer2X, y: layer2Y };
+      case 3: return { x: layer3X, y: layer3Y };
+      default: return { x: layer0X, y: layer0Y };
+    }
+  };
+
   return (
-    <section className="min-h-[85vh] md:min-h-screen bg-black relative flex flex-col items-center justify-center p-4 md:p-8 pt-20 md:pt-24 overflow-hidden">
+    <section className="min-h-[85vh] md:min-h-screen bg-black relative flex flex-col items-center justify-center p-4 md:p-8 pt-20 md:pt-24 overflow-hidden perspective-1000">
       {/* Neural Network Background */}
       <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
-        <svg
-          className="absolute inset-0 w-full h-full"
-          viewBox={viewBox}
-          preserveAspectRatio="xMidYMid slice"
-          aria-label="Neural network visualization background"
-          role="img"
-        >
-          <defs>
-            {/* Primary Gradient - Softer colors for elegance */}
-            <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={COLORS.cyan.primary} stopOpacity="0.5" />
-              <stop offset="50%" stopColor={COLORS.blue.primary} stopOpacity="0.4" />
-              <stop offset="100%" stopColor={COLORS.indigo.primary} stopOpacity="0.5" />
-            </linearGradient>
-            
-            {/* Pulse Gradient - Bright core with trailing fade */}
-            <linearGradient id="pulseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="white" stopOpacity="0" />
-              <stop offset="50%" stopColor="white" stopOpacity="1" />
-              <stop offset="100%" stopColor="white" stopOpacity="0" />
-            </linearGradient>
+        <motion.div className="w-full h-full relative">
+          <svg
+            className="absolute inset-0 w-full h-full"
+            viewBox={viewBox}
+            preserveAspectRatio="xMidYMid slice"
+            aria-label="Neural network visualization background"
+            role="img"
+          >
+            <defs>
+              {/* Primary Gradient - Softer colors for elegance */}
+              <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor={COLORS.cyan.primary} stopOpacity="0.5" />
+                <stop offset="50%" stopColor={COLORS.blue.primary} stopOpacity="0.4" />
+                <stop offset="100%" stopColor={COLORS.indigo.primary} stopOpacity="0.5" />
+              </linearGradient>
+              
+              {/* Pulse Gradient - Bright core with trailing fade */}
+              <linearGradient id="pulseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="white" stopOpacity="0" />
+                <stop offset="50%" stopColor="white" stopOpacity="1" />
+                <stop offset="100%" stopColor="white" stopOpacity="0" />
+              </linearGradient>
 
-            {/* Enhanced Glow filters */}
-            <filter id="glowStrong">
-              <feGaussianBlur stdDeviation="6" result="coloredBlur" />
-              <feMerge>
-                <feMergeNode in="coloredBlur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-            
-            <filter id="glowMedium">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-              <feMerge>
-                <feMergeNode in="coloredBlur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
+              {/* Enhanced Glow filters */}
+              <filter id="glowStrong">
+                <feGaussianBlur stdDeviation="6" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              
+              <filter id="glowMedium">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              
+              {/* Trail Gradient for signals */}
+              <linearGradient id="trailGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor={COLORS.cyan.primary} stopOpacity="0" />
+                <stop offset="50%" stopColor={COLORS.blue.primary} stopOpacity="0.5" />
+                <stop offset="100%" stopColor="white" stopOpacity="1" />
+              </linearGradient>
+            </defs>
 
-          {/* Render Connections - Thinner, more subtle lines */}
-          {neuralConnections.map((connection, i) => (
-            <motion.line
-              key={`connection-${i}`}
-              x1={connection.from.x}
-              y1={connection.from.y}
-              x2={connection.to.x}
-              y2={connection.to.y}
-              stroke="url(#primaryGradient)"
-              strokeWidth="1"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 0.2 }}
-              transition={{ duration: 2, delay: i * 0.02, ease: "easeInOut" }}
-            />
-          ))}
+            {/* Render Connections with Parallax */}
+            {neuralConnections.map((connection, i) => {
+              const transform = getLayerTransform(connection.from.layer);
+              
+              return (
+                <motion.g key={`conn-group-${i}`} style={{ x: transform.x, y: transform.y }}>
+                  <motion.line
+                    x1={connection.from.x}
+                    y1={connection.from.y}
+                    x2={connection.to.x}
+                    y2={connection.to.y}
+                    stroke="url(#primaryGradient)"
+                    strokeWidth="1"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 0.2 }}
+                    transition={{ duration: 2, delay: i * 0.02, ease: "easeInOut" }}
+                  />
+                  
+                  {/* Comet Trail Pulse (Smudge) */}
+                  {i % 3 === 0 && (
+                    <g>
+                      <animateMotion
+                        dur={`${connection.duration}s`}
+                        begin={`${connection.delay}s`}
+                        repeatCount="indefinite"
+                        path={`M${connection.from.x},${connection.from.y} L${connection.to.x},${connection.to.y}`}
+                        rotate="auto"
+                        calcMode="linear"
+                      />
+                      {/* Trail - long rectangle with gradient */}
+                      <rect
+                        x="-80"
+                        y="-1"
+                        width="80"
+                        height="2"
+                        fill="url(#trailGradient)"
+                        opacity="0.8"
+                      />
+                      {/* Head - bright dot */}
+                      <circle
+                        cx="0"
+                        cy="0"
+                        r="2"
+                        fill="#fff"
+                        filter="url(#glowStrong)"
+                      />
+                    </g>
+                  )}
+                </motion.g>
+              );
+            })}
 
-          {/* Render Nodes with Gentle Pulse */}
-          {neuralNodes.map((node, i) => (
-            <motion.circle
-              key={`node-${i}`}
-              cx={node.x}
-              cy={node.y}
-              r={node.layer === 0 || node.layer === 3 ? 5 : 3}
-              fill={COLORS.cyan.primary}
-              filter="url(#glowMedium)"
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [0.4, 0.8, 0.4],
-              }}
-              transition={{ 
-                duration: 4,
-                repeat: Infinity,
-                repeatType: "reverse",
-                delay: node.layer * 0.5 + i * 0.1,
-                ease: "easeInOut" 
-              }}
-            />
-          ))}
-
-          {/* Elegant Pulses - Smoother, slower movement */}
-          {neuralConnections.map((connection, i) => (
-            // Reduce frequency for elegance (every 3rd connection)
-            i % 3 === 0 && (
-              <motion.circle
-                key={`pulse-${i}`}
-                r="2"
-                fill="#fff"
-                filter="url(#glowStrong)"
-                opacity="0.8"
-              >
-                <animateMotion
-                  dur={`${connection.duration}s`}
-                  begin={`${connection.delay}s`}
-                  repeatCount="indefinite"
-                  path={`M${connection.from.x},${connection.from.y} L${connection.to.x},${connection.to.y}`}
-                  calcMode="spline"
-                  keyTimes="0;1"
-                  keySplines="0.4 0 0.2 1" // Easing bezier for natural flow
-                />
-              </motion.circle>
-            )
-          ))}
-        </svg>
+            {/* Render Nodes with Parallax */}
+            {neuralNodes.map((node, i) => {
+              const transform = getLayerTransform(node.layer);
+              return (
+                <motion.g key={`node-group-${i}`} style={{ x: transform.x, y: transform.y }}>
+                  <motion.circle
+                    cx={node.x}
+                    cy={node.y}
+                    r={node.layer === 0 || node.layer === 3 ? 5 : 3}
+                    fill={COLORS.cyan.primary}
+                    filter="url(#glowMedium)"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                      opacity: [0.4, 0.8, 0.4],
+                    }}
+                    transition={{ 
+                      duration: 4,
+                      repeat: Infinity,
+                      repeatType: "reverse",
+                      delay: node.layer * 0.5 + i * 0.1,
+                      ease: "easeInOut" 
+                    }}
+                  />
+                </motion.g>
+              );
+            })}
+          </svg>
+        </motion.div>
 
         {/* Gradient Overlays - Smoother transitions */}
         <div className="absolute inset-0">
