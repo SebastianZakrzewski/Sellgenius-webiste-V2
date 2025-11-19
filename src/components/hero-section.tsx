@@ -1,22 +1,22 @@
 "use client";
 
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ArrowRight, ArrowUpRight, Shield, Zap, TrendingUp } from "lucide-react";
 import { motion, useMotionValue, useTransform, useSpring, useScroll } from "framer-motion";
 
 // Color constants
 const COLORS = {
   cyan: {
-    primary: "#22D3EE",
-    rgba: (opacity: number) => `rgba(34, 211, 238, ${opacity})`,
+    primary: "#00F0FF", // Brighter Neon Cyan
+    rgba: (opacity: number) => `rgba(0, 240, 255, ${opacity})`,
   },
   blue: {
-    primary: "#3B82F6",
-    rgba: (opacity: number) => `rgba(59, 130, 246, ${opacity})`,
+    primary: "#0066FF", // Electric Blue
+    rgba: (opacity: number) => `rgba(0, 102, 255, ${opacity})`,
   },
   indigo: {
-    primary: "#6366F1",
-    rgba: (opacity: number) => `rgba(99, 102, 241, ${opacity})`,
+    primary: "#0022AA", // Deep Royal Blue (replacing purple-indigo)
+    rgba: (opacity: number) => `rgba(0, 34, 170, ${opacity})`,
   },
   white: {
     primary: "#FFFFFF",
@@ -27,7 +27,6 @@ const COLORS = {
 const GRADIENT_COLORS = {
   cyan: COLORS.cyan.rgba(0.25),
   blue: COLORS.blue.rgba(0.2),
-  indigo: COLORS.indigo.rgba(0.25),
 } as const;
 
 const Particle = ({ 
@@ -39,12 +38,12 @@ const Particle = ({
   mouseX: any;
   mouseY: any;
 }) => {
-  const x = useTransform(mouseX, [-1, 1], [-20 * (data.size / 2), 20 * (data.size / 2)]);
-  const y = useTransform(mouseY, [-1, 1], [-20 * (data.size / 2), 20 * (data.size / 2)]);
+  const x = useTransform(mouseX, [-1, 1], [-10 * (data.size / 2), 10 * (data.size / 2)]);
+  const y = useTransform(mouseY, [-1, 1], [-10 * (data.size / 2), 10 * (data.size / 2)]);
 
   return (
     <motion.div
-      className="absolute rounded-full bg-white/20"
+      className="absolute rounded-full bg-white/20 will-change-transform"
       style={{
         left: `${data.x}%`,
         top: `${data.y}%`,
@@ -67,10 +66,9 @@ const Particle = ({
   );
 };
 
-// Parametric Wave Component
+// Parametric Wave Component - Optimized
 const ParametricWave = ({
   index,
-  total,
   centerX,
   centerY,
   baseRadius,
@@ -80,7 +78,6 @@ const ParametricWave = ({
   phaseShift = 0
 }: {
   index: number;
-  total: number;
   centerX: number;
   centerY: number;
   baseRadius: number;
@@ -90,24 +87,22 @@ const ParametricWave = ({
   phaseShift?: number;
 }) => {
   // Generate the path data for a sine wave wrapped around a circle
+  // OPTIMIZATION: Reduced steps from 360 to 180 (half resolution, visually similar)
   const pathData = useMemo(() => {
     const points = [];
-    const steps = 360; // Resolution
-    // Use different frequencies for different lines to create organic interference
+    const steps = 180; 
     const frequency = 6 + (index % 3); 
     
     for (let i = 0; i <= steps; i++) {
       const theta = (i / steps) * Math.PI * 2;
-      // Variable amplitude based on position to create "lobes"
       const r = baseRadius + amplitude * Math.sin(frequency * theta + phaseShift);
       
       const x = centerX + r * Math.cos(theta);
       const y = centerY + r * Math.sin(theta);
       
-      points.push(`${i === 0 ? 'M' : 'L'} ${x} ${y}`);
+      points.push(`${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`);
     }
     
-    // Close the loop
     points.push("Z");
     return points.join(" ");
   }, [centerX, centerY, baseRadius, amplitude, index, phaseShift]);
@@ -118,22 +113,21 @@ const ParametricWave = ({
       stroke={color}
       strokeWidth={1.5}
       fill="none"
-      initial={{ pathLength: 0, opacity: 0 }}
+      initial={{ opacity: 0 }}
       animate={{ 
-        pathLength: 1, 
         opacity: [0.3, 0.6, 0.3],
         rotate: [0, 360 * direction],
-        scale: [1, 1.02, 1] // Subtle breathing per line
+        scale: [1, 1.02, 1] 
       }}
       transition={{
-        pathLength: { duration: 2, ease: "easeInOut" },
         opacity: { duration: 3 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: index * 0.05 },
         rotate: { duration: 60 + (index % 10), repeat: Infinity, ease: "linear" },
         scale: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }
       }}
       style={{
-        originX: "50%", // Rotate around center (relative to the SVG viewBox, we need to be careful here)
-        originY: "50%", // SVG transform origin is tricky, usually better to rotate a Group
+        originX: "50%", 
+        originY: "50%",
+        willChange: "transform, opacity" // CSS Hint for optimization
       }}
     />
   );
@@ -153,7 +147,11 @@ const RotatingWaveGroup = ({
     <motion.g
       animate={{ rotate: 360 * direction }}
       transition={{ duration: duration, repeat: Infinity, ease: "linear" }}
-      style={{ originX: "960px", originY: "800px" }} // Center of the 1920x1600 viewBox
+      style={{ 
+        originX: "960px", 
+        originY: "800px",
+        willChange: "transform" 
+      }} 
     >
       {children}
     </motion.g>
@@ -161,13 +159,11 @@ const RotatingWaveGroup = ({
 };
 
 export function HeroSection() {
-  const [windowWidth, setWindowWidth] = useState(1920);
-
-  // Particle System
+  // Particle System - OPTIMIZATION: Reduced count from 30 to 15
   const [particles, setParticles] = useState<{ x: number; y: number; size: number; duration: number; delay: number }[]>([]);
 
   useEffect(() => {
-    const newParticles = Array.from({ length: 30 }).map(() => ({
+    const newParticles = Array.from({ length: 15 }).map(() => ({
       x: Math.random() * 100,
       y: Math.random() * 100,
       size: Math.random() * 2 + 1,
@@ -184,13 +180,9 @@ export function HeroSection() {
   const mouseXSpring = useSpring(mouseX, springConfig);
   const mouseYSpring = useSpring(mouseY, springConfig);
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 1000], [0, 400]); // Parallax for whole content
+  const y = useTransform(scrollY, [0, 1000], [0, 200]); // OPTIMIZATION: Reduced parallax range
 
   useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
       const centerX = window.innerWidth / 2;
@@ -199,12 +191,8 @@ export function HeroSection() {
       mouseY.set((clientY - centerY) / centerY);
     };
     
-    handleResize();
-    window.addEventListener("resize", handleResize);
     window.addEventListener("mousemove", handleMouseMove);
-    
     return () => {
-      window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
     };
   }, [mouseX, mouseY]);
@@ -227,14 +215,14 @@ export function HeroSection() {
   const centerY = 800;
 
   // 3D Tilt Effect
-  const tiltX = useTransform(mouseYSpring, [-0.5, 0.5], [2, -2]); 
-  const tiltY = useTransform(mouseXSpring, [-0.5, 0.5], [-2, 2]); 
+  const tiltX = useTransform(mouseYSpring, [-0.5, 0.5], [1, -1]); // OPTIMIZATION: Reduced tilt
+  const tiltY = useTransform(mouseXSpring, [-0.5, 0.5], [-1, 1]); 
 
   return (
     <section className="min-h-[85vh] md:min-h-screen bg-black relative flex flex-col items-center justify-center p-4 md:p-8 pt-20 md:pt-24 overflow-hidden perspective-1000">
       {/* Animated Background */}
       <motion.div 
-        className="absolute inset-0 overflow-hidden z-0 pointer-events-none"
+        className="absolute inset-0 overflow-hidden z-0 pointer-events-none will-change-transform"
         style={{
           rotateX: tiltX,
           rotateY: tiltY,
@@ -260,6 +248,7 @@ export function HeroSection() {
             preserveAspectRatio="xMidYMid slice"
             aria-label="Geometric logo visualization background"
             role="img"
+            style={{ willChange: "transform" }}
           >
             <defs>
               <filter id="glowStrong" x="-50%" y="-50%" width="200%" height="200%">
@@ -290,58 +279,60 @@ export function HeroSection() {
               <motion.g
                 animate={{ scale: [0.98, 1.02, 0.98] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                style={{ originX: `${centerX}px`, originY: `${centerY}px` }}
+                style={{ 
+                  originX: `${centerX}px`, 
+                  originY: `${centerY}px`,
+                  willChange: "transform"
+                }}
               >
+                {/* OPTIMIZATION: Reduced number of lines per layer */}
                 {/* Layer 1: Inner high-frequency waves (Cyan) */}
                 <RotatingWaveGroup direction={1} duration={40}>
-                  {Array.from({ length: 12 }).map((_, i) => (
+                  {Array.from({ length: 8 }).map((_, i) => (
                      <ParametricWave
                       key={`inner-${i}`}
                       index={i}
-                      total={12}
                       centerX={centerX}
                       centerY={centerY}
-                      baseRadius={200}
+                      baseRadius={400} // Increased from 200 to clear center for text
                       amplitude={40}
                       color={COLORS.cyan.primary}
                       direction={1}
-                      phaseShift={(i / 12) * Math.PI * 2}
+                      phaseShift={(i / 8) * Math.PI * 2}
                     />
                   ))}
                 </RotatingWaveGroup>
 
                 {/* Layer 2: Middle waves (Blue) - Counter Rotating */}
                 <RotatingWaveGroup direction={-1} duration={50}>
-                  {Array.from({ length: 16 }).map((_, i) => (
+                  {Array.from({ length: 12 }).map((_, i) => (
                      <ParametricWave
                       key={`mid-${i}`}
                       index={i}
-                      total={16}
                       centerX={centerX}
                       centerY={centerY}
-                      baseRadius={280}
+                      baseRadius={500} // Increased from 280
                       amplitude={60}
                       color={COLORS.blue.primary}
                       direction={-1}
-                      phaseShift={(i / 16) * Math.PI * 2}
+                      phaseShift={(i / 12) * Math.PI * 2}
                     />
                   ))}
                 </RotatingWaveGroup>
 
                 {/* Layer 3: Outer large waves (Indigo/White mix) */}
                 <RotatingWaveGroup direction={1} duration={60}>
-                  {Array.from({ length: 20 }).map((_, i) => (
+                  {Array.from({ length: 16 }).map((_, i) => (
                      <ParametricWave
                       key={`outer-${i}`}
                       index={i}
-                      total={20}
                       centerX={centerX}
                       centerY={centerY}
-                      baseRadius={380}
+                      baseRadius={600} // Increased from 380
                       amplitude={50}
                       color={i % 3 === 0 ? COLORS.white.primary : COLORS.indigo.primary}
                       direction={1}
-                      phaseShift={(i / 20) * Math.PI * 2}
+                      phaseShift={(i / 16) * Math.PI * 2}
                     />
                   ))}
                 </RotatingWaveGroup>
@@ -358,6 +349,7 @@ export function HeroSection() {
                initial={{ opacity: 0 }}
                animate={{ opacity: [0.1, 0.2, 0.1], scale: [0.8, 1.2, 0.8] }}
                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+               style={{ willChange: "opacity, transform" }}
             />
 
           </svg>
@@ -383,6 +375,7 @@ export function HeroSection() {
                 height: "800px",
                 background: `radial-gradient(circle, ${COLORS.blue.rgba(0.3)} 0%, transparent 70%)`,
                 transform: "translate(-50%, -50%)",
+                willChange: "transform, opacity"
               }}
             />
         </div>
