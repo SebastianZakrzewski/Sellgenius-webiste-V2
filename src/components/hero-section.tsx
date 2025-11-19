@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { ArrowRight, ArrowUpRight, Shield, Zap, TrendingUp } from "lucide-react";
-import { motion, useMotionValue, useTransform, useSpring, useScroll } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring, useScroll, AnimatePresence } from "framer-motion";
 
 // Color constants
 const COLORS = {
@@ -158,9 +158,43 @@ const RotatingWaveGroup = ({
   );
 };
 
+// Slides Data
+const slides = [
+  {
+    overline: "TRANSFORMACJA CYFROWA",
+    titlePrefix: "Wdrażanie",
+    titleHighlight: "AI",
+    titleSuffix: "dla biznesu",
+    description: "Odkryj potencjał sztucznej inteligencji. Pomagamy firmom zintegrować najnowsze technologie AI, aby zautomatyzować procesy i zwiększyć wydajność."
+  },
+  {
+    overline: "INTELIGENTNA AUTOMATYZACJA",
+    titlePrefix: "Tworzenie",
+    titleHighlight: "Agentów AI",
+    titleSuffix: "",
+    description: "Autonomiczni agenci, którzy pracują dla Ciebie 24/7. Od obsługi klienta po skomplikowane analizy danych – nasi agenci rewolucjonizują sposób pracy."
+  },
+  {
+    overline: "MIERZALNE WYNIKI",
+    titlePrefix: "Zwiększanie",
+    titleHighlight: "Sprzedaży",
+    titleSuffix: "",
+    description: "Wykorzystaj dane i predykcję, aby dotrzeć do właściwych klientów w odpowiednim czasie. SellGenius to klucz do rekordowych wyników sprzedaży."
+  }
+];
+
 export function HeroSection() {
-  // Particle System - OPTIMIZATION: Reduced count from 30 to 15
+  // Particle System
   const [particles, setParticles] = useState<{ x: number; y: number; size: number; duration: number; delay: number }[]>([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Auto-rotate slides
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const newParticles = Array.from({ length: 15 }).map(() => ({
@@ -180,7 +214,7 @@ export function HeroSection() {
   const mouseXSpring = useSpring(mouseX, springConfig);
   const mouseYSpring = useSpring(mouseY, springConfig);
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 1000], [0, 200]); // OPTIMIZATION: Reduced parallax range
+  const y = useTransform(scrollY, [0, 1000], [0, 200]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -197,36 +231,24 @@ export function HeroSection() {
     };
   }, [mouseX, mouseY]);
 
-  const stats = [
-    { value: "500+", label: "firm ufa nam" },
-    { value: "98%", label: "zadowolenia klientów" },
-    { value: "3x", label: "wzrost ROI średnio" },
-  ];
-
-  const trustIndicators = [
-    { icon: Shield, text: "Bezpieczne dane" },
-    { icon: Zap, text: "GDPR Compliant" },
-    { icon: TrendingUp, text: "24/7 Support" },
-  ];
-
   // Responsive viewBox
   const viewBox = "0 0 1920 1600";
   const centerX = 960;
   const centerY = 800;
 
   // 3D Tilt Effect
-  const tiltX = useTransform(mouseYSpring, [-0.5, 0.5], [1, -1]); // OPTIMIZATION: Reduced tilt
+  const tiltX = useTransform(mouseYSpring, [-0.5, 0.5], [1, -1]);
   const tiltY = useTransform(mouseXSpring, [-0.5, 0.5], [-1, 1]); 
 
   return (
-    <section className="min-h-[85vh] md:min-h-screen bg-black relative flex flex-col items-center justify-center p-4 md:p-8 pt-20 md:pt-24 overflow-hidden perspective-1000">
+    <section className="min-h-[85vh] md:min-h-screen bg-black relative flex flex-col justify-center p-4 md:p-8 pt-20 md:pt-24 overflow-hidden perspective-1000">
       {/* Animated Background */}
       <motion.div 
         className="absolute inset-0 overflow-hidden z-0 pointer-events-none will-change-transform"
         style={{
           rotateX: tiltX,
           rotateY: tiltY,
-          y // Parallax scroll
+          y 
         }}
       >
         <motion.div className="w-full h-full relative">
@@ -285,8 +307,7 @@ export function HeroSection() {
                   willChange: "transform"
                 }}
               >
-                {/* OPTIMIZATION: Reduced number of lines per layer */}
-                {/* Layer 1: Inner high-frequency waves (Cyan) */}
+                {/* Inner high-frequency waves (Cyan) */}
                 <RotatingWaveGroup direction={1} duration={40}>
                   {Array.from({ length: 8 }).map((_, i) => (
                      <ParametricWave
@@ -294,7 +315,7 @@ export function HeroSection() {
                       index={i}
                       centerX={centerX}
                       centerY={centerY}
-                      baseRadius={400} // Increased from 200 to clear center for text
+                      baseRadius={400}
                       amplitude={40}
                       color={COLORS.cyan.primary}
                       direction={1}
@@ -303,7 +324,7 @@ export function HeroSection() {
                   ))}
                 </RotatingWaveGroup>
 
-                {/* Layer 2: Middle waves (Blue) - Counter Rotating */}
+                {/* Middle waves (Blue) */}
                 <RotatingWaveGroup direction={-1} duration={50}>
                   {Array.from({ length: 12 }).map((_, i) => (
                      <ParametricWave
@@ -311,7 +332,7 @@ export function HeroSection() {
                       index={i}
                       centerX={centerX}
                       centerY={centerY}
-                      baseRadius={500} // Increased from 280
+                      baseRadius={500}
                       amplitude={60}
                       color={COLORS.blue.primary}
                       direction={-1}
@@ -320,7 +341,7 @@ export function HeroSection() {
                   ))}
                 </RotatingWaveGroup>
 
-                {/* Layer 3: Outer large waves (Indigo/White mix) */}
+                {/* Outer large waves */}
                 <RotatingWaveGroup direction={1} duration={60}>
                   {Array.from({ length: 16 }).map((_, i) => (
                      <ParametricWave
@@ -328,7 +349,7 @@ export function HeroSection() {
                       index={i}
                       centerX={centerX}
                       centerY={centerY}
-                      baseRadius={600} // Increased from 380
+                      baseRadius={600}
                       amplitude={50}
                       color={i % 3 === 0 ? COLORS.white.primary : COLORS.indigo.primary}
                       direction={1}
@@ -355,7 +376,7 @@ export function HeroSection() {
           </svg>
         </motion.div>
 
-        {/* Gradient Overlays - Atmospheric Glow */}
+        {/* Gradient Overlays */}
         <div className="absolute inset-0">
            <motion.div
               className="absolute rounded-full blur-[100px]"
@@ -381,118 +402,75 @@ export function HeroSection() {
         </div>
       </motion.div>
 
-      {/* Content Container */}
-      <div className="flex flex-col items-center gap-4 md:gap-6 max-w-5xl mx-auto px-4 relative z-10">
-        {/* Main Title */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center"
-        >
-          <h1
-            className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold uppercase text-center leading-tight tracking-widest"
-            style={{ 
-              fontFamily: '"Cassio BC", sans-serif',
-            }}
-          >
-            <span className="text-white block md:inline md:mr-4">SELL</span>
-            <span className="text-gradient">
-              GENIUS
-            </span>
-          </h1>
-        </motion.div>
-
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="text-xl md:text-2xl lg:text-3xl font-normal uppercase text-center mt-2 md:mt-4 glow-text"
-          style={{
-            color: '#4284A8',
-            letterSpacing: '0.4em',
-          }}
-        >
-          INTELIGENCJA DLA BIZNESU.
-        </motion.p>
-
-        {/* Description */}
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
-          className="text-base md:text-lg lg:text-xl text-gray-300 text-center max-w-3xl leading-relaxed mt-2 md:mt-4"
-        >
-          Zwiększ sprzedaż i optymalizuj procesy dzięki zaawansowanej analityce danych.
-        </motion.p>
-
-        {/* Social Proof Stats */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.5 }}
-          className="flex flex-wrap items-center justify-center gap-8 md:gap-12 mt-8 md:mt-10"
-        >
-          {stats.map((stat) => (
-            <div
-              key={stat.value}
-              className="text-center"
+      {/* Content Container - Text Slider */}
+      <div className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center w-full">
+        <div className="max-w-4xl w-full">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSlide}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col items-center text-center"
             >
-              <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-gradient">
-                {stat.value}
+              {/* Overline with accent */}
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <div className="h-[2px] w-12 bg-cyan-400" />
+                <span className="text-cyan-400 tracking-[0.2em] uppercase text-sm font-bold">
+                  {slides[currentSlide].overline}
+                </span>
+                <div className="h-[2px] w-12 bg-cyan-400" />
               </div>
-              <div className="text-xs md:text-sm text-gray-400 mt-1 uppercase tracking-wide">
-                {stat.label}
+
+              {/* Main Title */}
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight mb-6 leading-[1.1]">
+                {slides[currentSlide].titlePrefix}{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">
+                  {slides[currentSlide].titleHighlight}
+                </span>
+                {slides[currentSlide].titleSuffix && <br />}
+                {slides[currentSlide].titleSuffix}
+              </h1>
+
+              {/* Description */}
+              <p className="text-xl md:text-2xl text-gray-400 mb-10 leading-relaxed max-w-2xl">
+                {slides[currentSlide].description}
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap items-center justify-center gap-6">
+                <button
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-8 py-4 rounded-lg text-base font-bold transition-all duration-300 uppercase tracking-wide flex items-center gap-2 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-1"
+                >
+                  Rozpocznij teraz
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+
+                <button
+                  className="px-8 py-4 rounded-lg text-base font-bold transition-all duration-300 uppercase tracking-wide border border-white/20 hover:border-white/40 hover:bg-white/5 text-white flex items-center gap-2 group"
+                >
+                  Zobacz demo
+                  <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </button>
               </div>
-            </div>
-          ))}
-        </motion.div>
-
-        {/* Trust Indicators */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
-          className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-4 md:mt-6"
-        >
-          {trustIndicators.map((indicator) => {
-            const Icon = indicator.icon;
-            return (
-              <div
-                key={indicator.text}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg glass transition-all duration-300"
-              >
-                <Icon className="w-4 h-4 text-cyan-400" />
-                <span className="text-xs md:text-sm text-gray-300">{indicator.text}</span>
-              </div>
-            );
-          })}
-        </motion.div>
-
-        {/* CTA Buttons */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.5 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 mt-8 md:mt-10"
-        >
-          {/* Primary CTA */}
-          <button
-            className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 hover:from-cyan-500 hover:via-blue-600 hover:to-indigo-700 px-8 md:px-10 py-4 md:py-5 rounded-xl font-semibold text-base md:text-lg transition-all duration-300 uppercase tracking-wide shadow-lg hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black text-white flex items-center gap-2 group"
-          >
-            Rozpocznij teraz
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" aria-hidden="true" />
-          </button>
-
-          {/* Secondary CTA */}
-          <button
-            className="px-8 md:px-10 py-4 md:py-5 rounded-xl font-semibold text-base md:text-lg transition-all duration-300 uppercase tracking-wide border border-white/10 bg-white/5 hover:bg-white/10 hover:border-cyan-400/50 text-white hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black flex items-center gap-2 group backdrop-blur-sm"
-          >
-            Zobacz demo
-            <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" aria-hidden="true" />
-          </button>
-        </motion.div>
+            </motion.div>
+          </AnimatePresence>
+          
+          {/* Slide Indicators */}
+          <div className="flex justify-center gap-3 mt-16">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`h-1 transition-all duration-300 rounded-full ${
+                  currentSlide === index ? "w-12 bg-cyan-400" : "w-4 bg-white/20 hover:bg-white/40"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
