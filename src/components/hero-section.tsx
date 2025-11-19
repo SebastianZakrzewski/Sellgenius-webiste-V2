@@ -47,8 +47,60 @@ const GRADIENT_COLORS = {
   indigo: COLORS.indigo.rgba(0.25),
 } as const;
 
+// Typewriter Effect removed
+const Particle = ({ 
+  data, 
+  mouseX, 
+  mouseY 
+}: { 
+  data: { x: number; y: number; size: number; duration: number; delay: number };
+  mouseX: any;
+  mouseY: any;
+}) => {
+  const x = useTransform(mouseX, [-1, 1], [-20 * (data.size / 2), 20 * (data.size / 2)]);
+  const y = useTransform(mouseY, [-1, 1], [-20 * (data.size / 2), 20 * (data.size / 2)]);
+
+  return (
+    <motion.div
+      className="absolute rounded-full bg-white/20"
+      style={{
+        left: `${data.x}%`,
+        top: `${data.y}%`,
+        width: data.size,
+        height: data.size,
+        x,
+        y,
+      }}
+      animate={{
+        y: [0, -30, 0],
+        opacity: [0.2, 0.5, 0.2],
+      }}
+      transition={{
+        duration: data.duration,
+        repeat: Infinity,
+        delay: data.delay,
+        ease: "linear"
+      }}
+    />
+  );
+};
+
 export function HeroSection() {
   const [windowWidth, setWindowWidth] = useState(1920);
+
+  // Particle System
+  const [particles, setParticles] = useState<{ x: number; y: number; size: number; duration: number; delay: number }[]>([]);
+
+  useEffect(() => {
+    const newParticles = Array.from({ length: 20 }).map(() => ({
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 3 + 1,
+      duration: 10 + Math.random() * 20,
+      delay: Math.random() * 5
+    }));
+    setParticles(newParticles);
+  }, []);
 
   // Mouse position state for Parallax
   const mouseX = useMotionValue(0);
@@ -222,6 +274,10 @@ export function HeroSection() {
   const layer3X = useTransform(mouseXSpring, [-1, 1], [80, -80]);
   const layer3Y = useTransform(mouseYSpring, [-1, 1], [80, -80]);
 
+  // 3D Tilt Effect
+  const tiltX = useTransform(mouseYSpring, [-0.5, 0.5], [2, -2]); // Tilt around X axis based on mouse Y
+  const tiltY = useTransform(mouseXSpring, [-0.5, 0.5], [-2, 2]); // Tilt around Y axis based on mouse X
+
   // Helper to get transform for a node/layer
   const getLayerTransform = (layer: number) => {
     switch(layer) {
@@ -236,8 +292,26 @@ export function HeroSection() {
   return (
     <section className="min-h-[85vh] md:min-h-screen bg-black relative flex flex-col items-center justify-center p-4 md:p-8 pt-20 md:pt-24 overflow-hidden perspective-1000">
       {/* Neural Network Background */}
-      <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
+      <motion.div 
+        className="absolute inset-0 overflow-hidden z-0 pointer-events-none"
+        style={{
+          rotateX: tiltX,
+          rotateY: tiltY,
+        }}
+      >
         <motion.div className="w-full h-full relative">
+          {/* Particles Layer */}
+          <div className="absolute inset-0 z-0">
+            {particles.map((p, i) => (
+              <Particle 
+                key={`particle-${i}`} 
+                data={p} 
+                mouseX={mouseX} 
+                mouseY={mouseY} 
+              />
+            ))}
+          </div>
+
           <svg
             className="absolute inset-0 w-full h-full"
             viewBox={viewBox}
@@ -300,7 +374,11 @@ export function HeroSection() {
                     strokeWidth="1"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: 0.2 }}
-                    transition={{ duration: 2, delay: i * 0.02, ease: "easeInOut" }}
+                    transition={{ 
+                      duration: 1.5, // Faster startup
+                      delay: connection.from.layer * 0.5 + i * 0.05, // Sequential startup
+                      ease: "easeOut" 
+                    }}
                   />
                   
                   {/* Comet Trail Pulse (Smudge) */}
@@ -353,13 +431,20 @@ export function HeroSection() {
                       scale: [1, 1.2, 1],
                       opacity: [0.4, 0.8, 0.4],
                     }}
+                    whileHover={{ 
+                      scale: 2.5, 
+                      opacity: 1,
+                      filter: "url(#glowStrong)"
+                    }}
                     transition={{ 
                       duration: 4,
                       repeat: Infinity,
                       repeatType: "reverse",
-                      delay: node.layer * 0.5 + i * 0.1,
+                      delay: node.layer * 0.5, // Layer-based startup
                       ease: "easeInOut" 
                     }}
+                    // Make nodes interactive
+                    style={{ cursor: "pointer" }}
                   />
                 </motion.g>
               );
@@ -394,7 +479,7 @@ export function HeroSection() {
             />
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* Content Container */}
       <div className="flex flex-col items-center gap-4 md:gap-6 max-w-5xl mx-auto px-4 relative z-10">
