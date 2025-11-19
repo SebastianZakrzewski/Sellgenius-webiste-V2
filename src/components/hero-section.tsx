@@ -426,7 +426,7 @@ export function HeroSection() {
               {/* Main Title */}
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight mb-6 leading-[1.1]">
                 {slides[currentSlide].titlePrefix}{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F0FF] via-[#0066FF] to-[#0022AA]">
                   {slides[currentSlide].titleHighlight}
                 </span>
                 {slides[currentSlide].titleSuffix && <br />}
@@ -441,14 +441,14 @@ export function HeroSection() {
               {/* CTA Buttons */}
               <div className="flex flex-wrap items-center justify-center gap-6">
                 <button
-                  className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-8 py-4 rounded-lg text-base font-bold transition-all duration-300 uppercase tracking-wide flex items-center gap-2 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-1"
+                  className="bg-gradient-to-r from-[#00F0FF] via-[#0066FF] to-[#0022AA] hover:from-[#00C0FF] hover:via-[#0055EE] hover:to-[#001199] text-white px-8 py-4 rounded-lg text-base font-bold transition-all duration-300 uppercase tracking-wide flex items-center gap-2 shadow-[0_0_30px_rgba(0,240,255,0.3)] hover:shadow-[0_0_50px_rgba(0,240,255,0.5)] hover:-translate-y-1"
                 >
                   Rozpocznij teraz
                   <ArrowRight className="w-5 h-5" />
                 </button>
 
                 <button
-                  className="px-8 py-4 rounded-lg text-base font-bold transition-all duration-300 uppercase tracking-wide border border-white/20 hover:border-white/40 hover:bg-white/5 text-white flex items-center gap-2 group"
+                  className="px-8 py-4 rounded-lg text-base font-bold transition-all duration-300 uppercase tracking-wide border border-cyan-500/30 hover:border-cyan-400/60 hover:bg-cyan-500/10 text-white flex items-center gap-2 group backdrop-blur-sm"
                 >
                   Zobacz demo
                   <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
