@@ -58,20 +58,21 @@ export function ProductsPreviewSection() {
             >
               <Link href={product.href}>
                 <div
-                  className="relative rounded-xl flex flex-col p-6 h-full cursor-pointer transition-all duration-300 glass glass-hover group border border-white/5 hover:border-cyan-500/30"
+                  className="relative rounded-xl flex flex-col p-6 h-full cursor-pointer shadow-xl"
+                  style={{
+                    background: `linear-gradient(to bottom, #22D3EE, #3B82F6, #22D3EE)`,
+                    boxShadow: '0 10px 40px rgba(34, 211, 238, 0.2)',
+                  }}
                 >
-                  {/* Glow effect on hover */}
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-cyan-500/0 via-blue-500/0 to-indigo-600/0 opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
-                  
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors">
+                  <h3 className="text-xl font-bold text-black mb-3">
                     {product.title}
                   </h3>
-                  <p className="text-gray-400 text-sm leading-relaxed flex-1 mb-4 group-hover:text-gray-300 transition-colors">
+                  <p className="text-black text-sm leading-relaxed flex-1 mb-4">
                     {product.description}
                   </p>
-                  <div className="flex items-center text-cyan-400 font-semibold text-sm group-hover:text-cyan-300">
+                  <div className="flex items-center text-black font-semibold text-sm">
                     Dowiedz się więcej
-                    <ArrowUpRight className="w-4 h-4 ml-2 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    <ArrowUpRight className="w-4 h-4 ml-2" />
                   </div>
                 </div>
               </Link>

@@ -15,6 +15,7 @@ type NeuralConnection = {
   from: NeuralNode;
   to: NeuralNode;
   delay: number; // Added random delay for staggered pulses
+  duration: number; // Added random duration for more natural feel
 };
 
 type OverlayConfig = {
@@ -41,9 +42,9 @@ const COLORS = {
 } as const;
 
 const GRADIENT_COLORS = {
-  cyan: COLORS.cyan.rgba(0.3),
-  blue: COLORS.blue.rgba(0.25),
-  indigo: COLORS.indigo.rgba(0.3),
+  cyan: COLORS.cyan.rgba(0.25),
+  blue: COLORS.blue.rgba(0.2),
+  indigo: COLORS.indigo.rgba(0.25),
 } as const;
 
 export function HeroSection() {
@@ -156,10 +157,11 @@ export function HeroSection() {
       { from: nodes[17], to: nodes[21] },
     ];
 
-    // Add random delay to each connection for staggered pulses
+    // Add random delay and variable duration for more organic feel
     const connections: NeuralConnection[] = rawConnections.map(conn => ({
       ...conn,
-      delay: Math.random() * 2
+      delay: Math.random() * 4, // Increased delay range
+      duration: 2 + Math.random() * 1.5 // Variable duration 2-3.5s
     }));
 
     return { nodes, connections };
@@ -195,13 +197,20 @@ export function HeroSection() {
           role="img"
         >
           <defs>
-            {/* Primary Gradient */}
+            {/* Primary Gradient - Softer colors for elegance */}
             <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={COLORS.cyan.primary} stopOpacity="0.9" />
-              <stop offset="50%" stopColor={COLORS.blue.primary} stopOpacity="0.8" />
-              <stop offset="100%" stopColor={COLORS.indigo.primary} stopOpacity="0.9" />
+              <stop offset="0%" stopColor={COLORS.cyan.primary} stopOpacity="0.5" />
+              <stop offset="50%" stopColor={COLORS.blue.primary} stopOpacity="0.4" />
+              <stop offset="100%" stopColor={COLORS.indigo.primary} stopOpacity="0.5" />
             </linearGradient>
             
+            {/* Pulse Gradient - Bright core with trailing fade */}
+            <linearGradient id="pulseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="white" stopOpacity="0" />
+              <stop offset="50%" stopColor="white" stopOpacity="1" />
+              <stop offset="100%" stopColor="white" stopOpacity="0" />
+            </linearGradient>
+
             {/* Enhanced Glow filters */}
             <filter id="glowStrong">
               <feGaussianBlur stdDeviation="6" result="coloredBlur" />
@@ -212,15 +221,7 @@ export function HeroSection() {
             </filter>
             
             <filter id="glowMedium">
-              <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-              <feMerge>
-                <feMergeNode in="coloredBlur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-            
-            <filter id="glowSubtle">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
               <feMerge>
                 <feMergeNode in="coloredBlur" />
                 <feMergeNode in="SourceGraphic" />
@@ -228,7 +229,7 @@ export function HeroSection() {
             </filter>
           </defs>
 
-          {/* Render Connections */}
+          {/* Render Connections - Thinner, more subtle lines */}
           {neuralConnections.map((connection, i) => (
             <motion.line
               key={`connection-${i}`}
@@ -237,73 +238,76 @@ export function HeroSection() {
               x2={connection.to.x}
               y2={connection.to.y}
               stroke="url(#primaryGradient)"
-              strokeWidth="1.5"
+              strokeWidth="1"
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 0.3 }}
+              animate={{ pathLength: 1, opacity: 0.2 }}
               transition={{ duration: 2, delay: i * 0.02, ease: "easeInOut" }}
             />
           ))}
 
-          {/* Render Nodes with Pulse Reaction */}
+          {/* Render Nodes with Gentle Pulse */}
           {neuralNodes.map((node, i) => (
             <motion.circle
               key={`node-${i}`}
               cx={node.x}
               cy={node.y}
-              r={node.layer === 0 || node.layer === 3 ? 6 : 4}
+              r={node.layer === 0 || node.layer === 3 ? 5 : 3}
               fill={COLORS.cyan.primary}
               filter="url(#glowMedium)"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
-                scale: [1, 1.5, 1],
-                opacity: [0.8, 1, 0.8],
-                filter: ["url(#glowMedium)", "url(#glowStrong)", "url(#glowMedium)"]
+                scale: [1, 1.2, 1],
+                opacity: [0.4, 0.8, 0.4],
               }}
               transition={{ 
-                duration: 2, // Match pulse duration
+                duration: 4,
                 repeat: Infinity,
-                repeatDelay: Math.random() * 2, // Randomized activation
+                repeatType: "reverse",
                 delay: node.layer * 0.5 + i * 0.1,
                 ease: "easeInOut" 
               }}
             />
           ))}
 
-          {/* Active Pulses flowing through network */}
+          {/* Elegant Pulses - Smoother, slower movement */}
           {neuralConnections.map((connection, i) => (
-            i % 2 === 0 && ( // Increased frequency of pulses (every 2nd connection)
+            // Reduce frequency for elegance (every 3rd connection)
+            i % 3 === 0 && (
               <motion.circle
                 key={`pulse-${i}`}
-                r="3"
+                r="2"
                 fill="#fff"
                 filter="url(#glowStrong)"
+                opacity="0.8"
               >
                 <animateMotion
-                  dur="2s"
+                  dur={`${connection.duration}s`}
                   begin={`${connection.delay}s`}
                   repeatCount="indefinite"
                   path={`M${connection.from.x},${connection.from.y} L${connection.to.x},${connection.to.y}`}
-                  calcMode="linear"
+                  calcMode="spline"
+                  keyTimes="0;1"
+                  keySplines="0.4 0 0.2 1" // Easing bezier for natural flow
                 />
               </motion.circle>
             )
           ))}
         </svg>
 
-        {/* Gradient Overlays - Radial gradients at key points with pulsation */}
+        {/* Gradient Overlays - Smoother transitions */}
         <div className="absolute inset-0">
           {overlays.map((overlay, i) => (
             <motion.div
               key={`overlay-${i}`}
               className="absolute rounded-full blur-3xl"
               animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.5, 0.3],
+                scale: [1, 1.1, 1],
+                opacity: [0.2, 0.3, 0.2],
               }}
               transition={{
-                duration: 6,
+                duration: 8, // Slower breath
                 repeat: Infinity,
-                delay: i * 2,
+                delay: i * 3,
                 ease: "easeInOut",
               }}
               style={{
@@ -311,7 +315,7 @@ export function HeroSection() {
                 top: overlay.y,
                 width: overlay.size,
                 height: overlay.size,
-                background: `radial-gradient(circle, ${GRADIENT_COLORS[overlay.color]} 0%, ${COLORS.blue.rgba(0.1)} 40%, transparent 70%)`,
+                background: `radial-gradient(circle, ${GRADIENT_COLORS[overlay.color]} 0%, ${COLORS.blue.rgba(0.05)} 50%, transparent 70%)`,
                 transform: "translate(-50%, -50%)",
               }}
             />
