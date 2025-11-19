@@ -1,29 +1,8 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { ArrowRight, ArrowUpRight, Shield, Zap, TrendingUp } from "lucide-react";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
-
-// TypeScript types
-type NeuralNode = {
-  x: number;
-  y: number;
-  layer: number;
-};
-
-type NeuralConnection = {
-  from: NeuralNode;
-  to: NeuralNode;
-  delay: number; // Added random delay for staggered pulses
-  duration: number; // Added random duration for more natural feel
-};
-
-type OverlayConfig = {
-  x: string;
-  y: string;
-  size: string;
-  color: "cyan" | "blue" | "indigo";
-};
+import { motion, useMotionValue, useTransform, useSpring, useScroll } from "framer-motion";
 
 // Color constants
 const COLORS = {
@@ -39,6 +18,10 @@ const COLORS = {
     primary: "#6366F1",
     rgba: (opacity: number) => `rgba(99, 102, 241, ${opacity})`,
   },
+  white: {
+    primary: "#FFFFFF",
+    rgba: (opacity: number) => `rgba(255, 255, 255, ${opacity})`,
+  }
 } as const;
 
 const GRADIENT_COLORS = {
@@ -47,7 +30,6 @@ const GRADIENT_COLORS = {
   indigo: COLORS.indigo.rgba(0.25),
 } as const;
 
-// Typewriter Effect removed
 const Particle = ({ 
   data, 
   mouseX, 
@@ -85,6 +67,99 @@ const Particle = ({
   );
 };
 
+// Parametric Wave Component
+const ParametricWave = ({
+  index,
+  total,
+  centerX,
+  centerY,
+  baseRadius,
+  amplitude,
+  color,
+  direction,
+  phaseShift = 0
+}: {
+  index: number;
+  total: number;
+  centerX: number;
+  centerY: number;
+  baseRadius: number;
+  amplitude: number;
+  color: string;
+  direction: number;
+  phaseShift?: number;
+}) => {
+  // Generate the path data for a sine wave wrapped around a circle
+  const pathData = useMemo(() => {
+    const points = [];
+    const steps = 360; // Resolution
+    // Use different frequencies for different lines to create organic interference
+    const frequency = 6 + (index % 3); 
+    
+    for (let i = 0; i <= steps; i++) {
+      const theta = (i / steps) * Math.PI * 2;
+      // Variable amplitude based on position to create "lobes"
+      const r = baseRadius + amplitude * Math.sin(frequency * theta + phaseShift);
+      
+      const x = centerX + r * Math.cos(theta);
+      const y = centerY + r * Math.sin(theta);
+      
+      points.push(`${i === 0 ? 'M' : 'L'} ${x} ${y}`);
+    }
+    
+    // Close the loop
+    points.push("Z");
+    return points.join(" ");
+  }, [centerX, centerY, baseRadius, amplitude, index, phaseShift]);
+
+  return (
+    <motion.path
+      d={pathData}
+      stroke={color}
+      strokeWidth={1.5}
+      fill="none"
+      initial={{ pathLength: 0, opacity: 0 }}
+      animate={{ 
+        pathLength: 1, 
+        opacity: [0.3, 0.6, 0.3],
+        rotate: [0, 360 * direction],
+        scale: [1, 1.02, 1] // Subtle breathing per line
+      }}
+      transition={{
+        pathLength: { duration: 2, ease: "easeInOut" },
+        opacity: { duration: 3 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: index * 0.05 },
+        rotate: { duration: 60 + (index % 10), repeat: Infinity, ease: "linear" },
+        scale: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }
+      }}
+      style={{
+        originX: "50%", // Rotate around center (relative to the SVG viewBox, we need to be careful here)
+        originY: "50%", // SVG transform origin is tricky, usually better to rotate a Group
+      }}
+    />
+  );
+};
+
+// Wrapper to handle rotation correctly
+const RotatingWaveGroup = ({ 
+  children, 
+  direction, 
+  duration 
+}: { 
+  children: React.ReactNode; 
+  direction: number; 
+  duration: number; 
+}) => {
+  return (
+    <motion.g
+      animate={{ rotate: 360 * direction }}
+      transition={{ duration: duration, repeat: Infinity, ease: "linear" }}
+      style={{ originX: "960px", originY: "800px" }} // Center of the 1920x1600 viewBox
+    >
+      {children}
+    </motion.g>
+  );
+};
+
 export function HeroSection() {
   const [windowWidth, setWindowWidth] = useState(1920);
 
@@ -92,10 +167,10 @@ export function HeroSection() {
   const [particles, setParticles] = useState<{ x: number; y: number; size: number; duration: number; delay: number }[]>([]);
 
   useEffect(() => {
-    const newParticles = Array.from({ length: 20 }).map(() => ({
+    const newParticles = Array.from({ length: 30 }).map(() => ({
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 3 + 1,
+      size: Math.random() * 2 + 1,
       duration: 10 + Math.random() * 20,
       delay: Math.random() * 5
     }));
@@ -108,6 +183,8 @@ export function HeroSection() {
   const springConfig = { damping: 25, stiffness: 120 };
   const mouseXSpring = useSpring(mouseX, springConfig);
   const mouseYSpring = useSpring(mouseY, springConfig);
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 1000], [0, 400]); // Parallax for whole content
 
   useEffect(() => {
     const handleResize = () => {
@@ -122,7 +199,7 @@ export function HeroSection() {
       mouseY.set((clientY - centerY) / centerY);
     };
     
-    handleResize(); // Set initial value
+    handleResize();
     window.addEventListener("resize", handleResize);
     window.addEventListener("mousemove", handleMouseMove);
     
@@ -144,159 +221,24 @@ export function HeroSection() {
     { icon: TrendingUp, text: "24/7 Support" },
   ];
 
-  // Responsive viewBox - static is fine, SVG scales automatically
+  // Responsive viewBox
   const viewBox = "0 0 1920 1600";
-
-  // Neural Network configuration - memoized for performance
-  const neuralNetworkConfig = useMemo(() => {
-    const centerX = 960;
-    const layerSpacing = 600;
-    const nodeSpacing = 250;
-    const topMargin = 150;
-
-    const nodes: NeuralNode[] = [
-      // Input layer - left side
-      { x: centerX - layerSpacing * 1.5, y: topMargin + nodeSpacing * 0, layer: 0 },
-      { x: centerX - layerSpacing * 1.5, y: topMargin + nodeSpacing * 1, layer: 0 },
-      { x: centerX - layerSpacing * 1.5, y: topMargin + nodeSpacing * 2, layer: 0 },
-      { x: centerX - layerSpacing * 1.5, y: topMargin + nodeSpacing * 3, layer: 0 },
-      { x: centerX - layerSpacing * 1.5, y: topMargin + nodeSpacing * 4, layer: 0 },
-      { x: centerX - layerSpacing * 1.5, y: topMargin + nodeSpacing * 5, layer: 0 },
-      
-      // Hidden layer 1
-      { x: centerX - layerSpacing * 0.5, y: topMargin + nodeSpacing * 0.5, layer: 1 },
-      { x: centerX - layerSpacing * 0.5, y: topMargin + nodeSpacing * 1.5, layer: 1 },
-      { x: centerX - layerSpacing * 0.5, y: topMargin + nodeSpacing * 2.5, layer: 1 },
-      { x: centerX - layerSpacing * 0.5, y: topMargin + nodeSpacing * 3.5, layer: 1 },
-      { x: centerX - layerSpacing * 0.5, y: topMargin + nodeSpacing * 4.5, layer: 1 },
-      { x: centerX - layerSpacing * 0.5, y: topMargin + nodeSpacing * 5.5, layer: 1 },
-      
-      // Hidden layer 2
-      { x: centerX + layerSpacing * 0.5, y: topMargin + nodeSpacing * 0.5, layer: 2 },
-      { x: centerX + layerSpacing * 0.5, y: topMargin + nodeSpacing * 1.5, layer: 2 },
-      { x: centerX + layerSpacing * 0.5, y: topMargin + nodeSpacing * 2.5, layer: 2 },
-      { x: centerX + layerSpacing * 0.5, y: topMargin + nodeSpacing * 3.5, layer: 2 },
-      { x: centerX + layerSpacing * 0.5, y: topMargin + nodeSpacing * 4.5, layer: 2 },
-      { x: centerX + layerSpacing * 0.5, y: topMargin + nodeSpacing * 5.5, layer: 2 },
-      
-      // Output layer - right side
-      { x: centerX + layerSpacing * 1.5, y: topMargin + nodeSpacing * 1.5, layer: 3 },
-      { x: centerX + layerSpacing * 1.5, y: topMargin + nodeSpacing * 2.5, layer: 3 },
-      { x: centerX + layerSpacing * 1.5, y: topMargin + nodeSpacing * 3.5, layer: 3 },
-      { x: centerX + layerSpacing * 1.5, y: topMargin + nodeSpacing * 4.5, layer: 3 },
-    ];
-
-    const rawConnections = [
-      // Input to Hidden 1
-      { from: nodes[0], to: nodes[6] },
-      { from: nodes[0], to: nodes[7] },
-      { from: nodes[1], to: nodes[6] },
-      { from: nodes[1], to: nodes[8] },
-      { from: nodes[2], to: nodes[7] },
-      { from: nodes[2], to: nodes[9] },
-      { from: nodes[3], to: nodes[8] },
-      { from: nodes[3], to: nodes[10] },
-      { from: nodes[4], to: nodes[9] },
-      { from: nodes[4], to: nodes[11] },
-      { from: nodes[5], to: nodes[10] },
-      { from: nodes[5], to: nodes[11] },
-      
-      // Hidden 1 to Hidden 2
-      { from: nodes[6], to: nodes[12] },
-      { from: nodes[6], to: nodes[13] },
-      { from: nodes[7], to: nodes[12] },
-      { from: nodes[7], to: nodes[14] },
-      { from: nodes[8], to: nodes[13] },
-      { from: nodes[8], to: nodes[15] },
-      { from: nodes[9], to: nodes[14] },
-      { from: nodes[9], to: nodes[16] },
-      { from: nodes[10], to: nodes[15] },
-      { from: nodes[10], to: nodes[17] },
-      { from: nodes[11], to: nodes[16] },
-      { from: nodes[11], to: nodes[17] },
-      
-      // Hidden 2 to Output
-      { from: nodes[12], to: nodes[18] },
-      { from: nodes[12], to: nodes[19] },
-      { from: nodes[13], to: nodes[18] },
-      { from: nodes[13], to: nodes[20] },
-      { from: nodes[14], to: nodes[19] },
-      { from: nodes[14], to: nodes[21] },
-      { from: nodes[15], to: nodes[19] },
-      { from: nodes[15], to: nodes[20] },
-      { from: nodes[16], to: nodes[20] },
-      { from: nodes[16], to: nodes[21] },
-      { from: nodes[17], to: nodes[21] },
-    ];
-
-    // Add random delay and variable duration for more organic feel
-    const connections: NeuralConnection[] = rawConnections.map(conn => ({
-      ...conn,
-      delay: Math.random() * 4, // Increased delay range
-      duration: 2 + Math.random() * 1.5 // Variable duration 2-3.5s
-    }));
-
-    return { nodes, connections };
-  }, []);
-
-  const { nodes: neuralNodes, connections: neuralConnections } = neuralNetworkConfig;
-
-  // Responsive overlay positions
-  const overlays: OverlayConfig[] = useMemo(() => {
-    if (windowWidth < 768) {
-      return [
-        { x: "20%", y: "30%", size: "300px", color: "cyan" },
-        { x: "70%", y: "50%", size: "350px", color: "blue" },
-        { x: "80%", y: "70%", size: "300px", color: "indigo" },
-      ];
-    }
-    return [
-      { x: "30%", y: "40%", size: "400px", color: "cyan" },
-      { x: "60%", y: "50%", size: "500px", color: "blue" },
-      { x: "80%", y: "70%", size: "450px", color: "indigo" },
-    ];
-  }, [windowWidth]);
-
-  // Parallax transform values
-  // Layer 0 (Input) - moves slightly
-  const layer0X = useTransform(mouseXSpring, [-1, 1], [20, -20]);
-  const layer0Y = useTransform(mouseYSpring, [-1, 1], [20, -20]);
-  
-  // Layer 1 (Hidden 1) - moves more
-  const layer1X = useTransform(mouseXSpring, [-1, 1], [40, -40]);
-  const layer1Y = useTransform(mouseYSpring, [-1, 1], [40, -40]);
-  
-  // Layer 2 (Hidden 2) - moves even more
-  const layer2X = useTransform(mouseXSpring, [-1, 1], [60, -60]);
-  const layer2Y = useTransform(mouseYSpring, [-1, 1], [60, -60]);
-  
-  // Layer 3 (Output) - moves the most (foreground)
-  const layer3X = useTransform(mouseXSpring, [-1, 1], [80, -80]);
-  const layer3Y = useTransform(mouseYSpring, [-1, 1], [80, -80]);
+  const centerX = 960;
+  const centerY = 800;
 
   // 3D Tilt Effect
-  const tiltX = useTransform(mouseYSpring, [-0.5, 0.5], [2, -2]); // Tilt around X axis based on mouse Y
-  const tiltY = useTransform(mouseXSpring, [-0.5, 0.5], [-2, 2]); // Tilt around Y axis based on mouse X
-
-  // Helper to get transform for a node/layer
-  const getLayerTransform = (layer: number) => {
-    switch(layer) {
-      case 0: return { x: layer0X, y: layer0Y };
-      case 1: return { x: layer1X, y: layer1Y };
-      case 2: return { x: layer2X, y: layer2Y };
-      case 3: return { x: layer3X, y: layer3Y };
-      default: return { x: layer0X, y: layer0Y };
-    }
-  };
+  const tiltX = useTransform(mouseYSpring, [-0.5, 0.5], [2, -2]); 
+  const tiltY = useTransform(mouseXSpring, [-0.5, 0.5], [-2, 2]); 
 
   return (
     <section className="min-h-[85vh] md:min-h-screen bg-black relative flex flex-col items-center justify-center p-4 md:p-8 pt-20 md:pt-24 overflow-hidden perspective-1000">
-      {/* Neural Network Background */}
+      {/* Animated Background */}
       <motion.div 
         className="absolute inset-0 overflow-hidden z-0 pointer-events-none"
         style={{
           rotateX: tiltX,
           rotateY: tiltY,
+          y // Parallax scroll
         }}
       >
         <motion.div className="w-full h-full relative">
@@ -316,168 +258,133 @@ export function HeroSection() {
             className="absolute inset-0 w-full h-full"
             viewBox={viewBox}
             preserveAspectRatio="xMidYMid slice"
-            aria-label="Neural network visualization background"
+            aria-label="Geometric logo visualization background"
             role="img"
           >
             <defs>
-              {/* Primary Gradient - Softer colors for elegance */}
-              <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor={COLORS.cyan.primary} stopOpacity="0.5" />
-                <stop offset="50%" stopColor={COLORS.blue.primary} stopOpacity="0.4" />
-                <stop offset="100%" stopColor={COLORS.indigo.primary} stopOpacity="0.5" />
-              </linearGradient>
-              
-              {/* Pulse Gradient - Bright core with trailing fade */}
-              <linearGradient id="pulseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="white" stopOpacity="0" />
-                <stop offset="50%" stopColor="white" stopOpacity="1" />
-                <stop offset="100%" stopColor="white" stopOpacity="0" />
-              </linearGradient>
-
-              {/* Enhanced Glow filters */}
-              <filter id="glowStrong">
-                <feGaussianBlur stdDeviation="6" result="coloredBlur" />
+              <filter id="glowStrong" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <filter id="glowSoft" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="8" result="coloredBlur" />
                 <feMerge>
                   <feMergeNode in="coloredBlur" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
               
-              <filter id="glowMedium">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-              
-              {/* Trail Gradient for signals */}
-              <linearGradient id="trailGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor={COLORS.cyan.primary} stopOpacity="0" />
-                <stop offset="50%" stopColor={COLORS.blue.primary} stopOpacity="0.5" />
-                <stop offset="100%" stopColor="white" stopOpacity="1" />
+              {/* Gradients */}
+              <linearGradient id="gradCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor={COLORS.cyan.primary} stopOpacity="1" />
+                <stop offset="100%" stopColor={COLORS.blue.primary} stopOpacity="0.5" />
               </linearGradient>
             </defs>
 
-            {/* Render Connections with Parallax */}
-            {neuralConnections.map((connection, i) => {
-              const transform = getLayerTransform(connection.from.layer);
-              
-              return (
-                <motion.g key={`conn-group-${i}`} style={{ x: transform.x, y: transform.y }}>
-                  <motion.line
-                    x1={connection.from.x}
-                    y1={connection.from.y}
-                    x2={connection.to.x}
-                    y2={connection.to.y}
-                    stroke="url(#primaryGradient)"
-                    strokeWidth="1"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: 0.2 }}
-                    transition={{ 
-                      duration: 1.5, // Faster startup
-                      delay: connection.from.layer * 0.5 + i * 0.05, // Sequential startup
-                      ease: "easeOut" 
-                    }}
-                  />
-                  
-                  {/* Comet Trail Pulse (Smudge) */}
-                  {i % 3 === 0 && (
-                    <g>
-                      <animateMotion
-                        dur={`${connection.duration}s`}
-                        begin={`${connection.delay}s`}
-                        repeatCount="indefinite"
-                        path={`M${connection.from.x},${connection.from.y} L${connection.to.x},${connection.to.y}`}
-                        rotate="auto"
-                        calcMode="linear"
-                      />
-                      {/* Trail - long rectangle with gradient */}
-                      <rect
-                        x="-80"
-                        y="-1"
-                        width="80"
-                        height="2"
-                        fill="url(#trailGradient)"
-                        opacity="0.8"
-                      />
-                      {/* Head - bright dot */}
-                      <circle
-                        cx="0"
-                        cy="0"
-                        r="2"
-                        fill="#fff"
-                        filter="url(#glowStrong)"
-                      />
-                    </g>
-                  )}
-                </motion.g>
-              );
-            })}
+            {/* Main Logo Composition */}
+            <g filter="url(#glowStrong)" style={{ transformOrigin: `${centerX}px ${centerY}px` }}>
+              {/* Core breathing animation */}
+              <motion.g
+                animate={{ scale: [0.98, 1.02, 0.98] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                style={{ originX: `${centerX}px`, originY: `${centerY}px` }}
+              >
+                {/* Layer 1: Inner high-frequency waves (Cyan) */}
+                <RotatingWaveGroup direction={1} duration={40}>
+                  {Array.from({ length: 12 }).map((_, i) => (
+                     <ParametricWave
+                      key={`inner-${i}`}
+                      index={i}
+                      total={12}
+                      centerX={centerX}
+                      centerY={centerY}
+                      baseRadius={200}
+                      amplitude={40}
+                      color={COLORS.cyan.primary}
+                      direction={1}
+                      phaseShift={(i / 12) * Math.PI * 2}
+                    />
+                  ))}
+                </RotatingWaveGroup>
 
-            {/* Render Nodes with Parallax */}
-            {neuralNodes.map((node, i) => {
-              const transform = getLayerTransform(node.layer);
-              return (
-                <motion.g key={`node-group-${i}`} style={{ x: transform.x, y: transform.y }}>
-                  <motion.circle
-                    cx={node.x}
-                    cy={node.y}
-                    r={node.layer === 0 || node.layer === 3 ? 5 : 3}
-                    fill={COLORS.cyan.primary}
-                    filter="url(#glowMedium)"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ 
-                      scale: [1, 1.2, 1],
-                      opacity: [0.4, 0.8, 0.4],
-                    }}
-                    whileHover={{ 
-                      scale: 2.5, 
-                      opacity: 1,
-                      filter: "url(#glowStrong)"
-                    }}
-                    transition={{ 
-                      duration: 4,
-                      repeat: Infinity,
-                      repeatType: "reverse",
-                      delay: node.layer * 0.5, // Layer-based startup
-                      ease: "easeInOut" 
-                    }}
-                    // Make nodes interactive
-                    style={{ cursor: "pointer" }}
-                  />
-                </motion.g>
-              );
-            })}
+                {/* Layer 2: Middle waves (Blue) - Counter Rotating */}
+                <RotatingWaveGroup direction={-1} duration={50}>
+                  {Array.from({ length: 16 }).map((_, i) => (
+                     <ParametricWave
+                      key={`mid-${i}`}
+                      index={i}
+                      total={16}
+                      centerX={centerX}
+                      centerY={centerY}
+                      baseRadius={280}
+                      amplitude={60}
+                      color={COLORS.blue.primary}
+                      direction={-1}
+                      phaseShift={(i / 16) * Math.PI * 2}
+                    />
+                  ))}
+                </RotatingWaveGroup>
+
+                {/* Layer 3: Outer large waves (Indigo/White mix) */}
+                <RotatingWaveGroup direction={1} duration={60}>
+                  {Array.from({ length: 20 }).map((_, i) => (
+                     <ParametricWave
+                      key={`outer-${i}`}
+                      index={i}
+                      total={20}
+                      centerX={centerX}
+                      centerY={centerY}
+                      baseRadius={380}
+                      amplitude={50}
+                      color={i % 3 === 0 ? COLORS.white.primary : COLORS.indigo.primary}
+                      direction={1}
+                      phaseShift={(i / 20) * Math.PI * 2}
+                    />
+                  ))}
+                </RotatingWaveGroup>
+              </motion.g>
+            </g>
+            
+            {/* Central Glow */}
+            <motion.circle
+               cx={centerX}
+               cy={centerY}
+               r={100}
+               fill="url(#gradCyan)"
+               filter="url(#glowSoft)"
+               initial={{ opacity: 0 }}
+               animate={{ opacity: [0.1, 0.2, 0.1], scale: [0.8, 1.2, 0.8] }}
+               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
+
           </svg>
         </motion.div>
 
-        {/* Gradient Overlays - Smoother transitions */}
+        {/* Gradient Overlays - Atmospheric Glow */}
         <div className="absolute inset-0">
-          {overlays.map((overlay, i) => (
-            <motion.div
-              key={`overlay-${i}`}
-              className="absolute rounded-full blur-3xl"
+           <motion.div
+              className="absolute rounded-full blur-[100px]"
               animate={{
-                scale: [1, 1.1, 1],
-                opacity: [0.2, 0.3, 0.2],
+                scale: [1, 1.2, 1],
+                opacity: [0.15, 0.25, 0.15],
               }}
               transition={{
-                duration: 8, // Slower breath
+                duration: 8,
                 repeat: Infinity,
-                delay: i * 3,
                 ease: "easeInOut",
               }}
               style={{
-                left: overlay.x,
-                top: overlay.y,
-                width: overlay.size,
-                height: overlay.size,
-                background: `radial-gradient(circle, ${GRADIENT_COLORS[overlay.color]} 0%, ${COLORS.blue.rgba(0.05)} 50%, transparent 70%)`,
+                left: "50%",
+                top: "50%",
+                width: "800px",
+                height: "800px",
+                background: `radial-gradient(circle, ${COLORS.blue.rgba(0.3)} 0%, transparent 70%)`,
                 transform: "translate(-50%, -50%)",
               }}
             />
-          ))}
         </div>
       </motion.div>
 
