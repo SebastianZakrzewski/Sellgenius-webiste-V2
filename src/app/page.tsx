@@ -4,6 +4,7 @@ import { PromoVideoSection } from "@/components/promo-video-section";
 import { ProductsPreviewSection } from "@/components/products-preview-section";
 import { BenefitsSection } from "@/components/benefits-section";
 import { CTASection } from "@/components/cta-section";
+import { Footer } from "@/components/footer";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <PromoVideoSection />
       <BenefitsSection />
       <CTASection />
+      <Footer />
     </main>
   );
 }

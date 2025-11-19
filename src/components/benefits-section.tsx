@@ -38,8 +38,11 @@ export function BenefitsSection() {
   ];
 
   return (
-    <section className="min-h-screen bg-[#000000] flex flex-col items-center justify-center py-24 px-8">
-      <div className="max-w-6xl mx-auto w-full">
+    <section className="min-h-screen bg-black flex flex-col items-center justify-center py-24 px-8 relative overflow-hidden">
+      {/* Background Gradient Blob */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto w-full relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -48,7 +51,7 @@ export function BenefitsSection() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-4">
-            Dlaczego <span className="bg-gradient-to-r from-cyan-300 to-indigo-500 bg-clip-text text-transparent">SellGenius?</span>
+            Dlaczego <span className="text-gradient">SellGenius?</span>
           </h2>
           <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
             Kluczowe korzyści, które przyniesie Twojemu biznesowi
@@ -65,15 +68,16 @@ export function BenefitsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="flex flex-col items-start p-6 rounded-lg bg-[#0A0A0A] border border-gray-800 hover:border-cyan-500/50 transition-colors"
+                whileHover={{ y: -5 }}
+                className="flex flex-col items-start p-6 rounded-xl glass glass-hover group"
               >
-                <div className="mb-4 p-3 rounded-lg bg-gradient-to-r from-cyan-500/20 to-indigo-500/20">
-                  <Icon className="w-6 h-6 text-cyan-400" />
+                <div className="mb-4 p-3 rounded-lg bg-white/5 group-hover:bg-cyan-500/20 transition-colors duration-300">
+                  <Icon className="w-6 h-6 text-cyan-400 group-hover:text-cyan-300 group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] transition-all duration-300" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">
+                <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-cyan-100 transition-colors">
                   {benefit.title}
                 </h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
+                <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors">
                   {benefit.description}
                 </p>
               </motion.div>
@@ -84,4 +88,3 @@ export function BenefitsSection() {
     </section>
   );
 }
-

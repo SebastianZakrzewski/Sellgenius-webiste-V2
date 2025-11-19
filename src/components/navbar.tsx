@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -105,13 +104,13 @@ export function Navbar() {
         animate={{ y: 0 }}
         transition={{ duration: 0.3 }}
         className={cn(
-          "fixed top-0 left-0 right-0 z-[60] transition-all duration-300",
+          "fixed top-0 left-0 right-0 z-[60] transition-all duration-300 border-b border-transparent",
           isScrolled
-            ? "bg-background/80 backdrop-blur-md shadow-sm"
-            : "bg-background"
+            ? "bg-black/60 backdrop-blur-xl border-white/5 shadow-lg"
+            : "bg-transparent"
         )}
       >
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20 md:h-24">
           {/* Logo and Menu Toggle */}
           <div className="flex items-center gap-4">
             <Link
@@ -127,10 +126,10 @@ export function Navbar() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.2 }}
-                    className="text-xl font-semibold text-foreground whitespace-nowrap text-center"
+                    className="text-xl md:text-2xl font-bold text-white whitespace-nowrap text-center tracking-wider uppercase"
                     style={{ marginLeft: '24px', marginTop: '24px' }}
                   >
-                    SellGenius
+                    Sell<span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-500">Genius</span>
                   </motion.span>
                 ) : (
                   <motion.div
@@ -140,7 +139,7 @@ export function Navbar() {
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.2 }}
                     className="relative w-auto"
-                    style={{ height: '64px', marginLeft: '24px', marginTop: '48px' }}
+                    style={{ height: '100px', marginLeft: '24px', marginTop: '48px' }}
                   >
                     <Image
                       src="/images/logo.png"
@@ -148,7 +147,7 @@ export function Navbar() {
                       width={2160}
                       height={576}
                       className="w-auto object-contain"
-                      style={{ height: '64px' }}
+                      style={{ height: '100px' }}
                       quality={100}
                       priority
                       unoptimized
@@ -195,7 +194,7 @@ export function Navbar() {
           {/* Desktop CTA */}
           <div className="flex items-center gap-4 pr-6 lg:pr-8">
             <button
-              className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 hover:from-cyan-500 hover:via-blue-600 hover:to-indigo-700 text-black px-6 py-2 rounded-lg font-semibold transition-all duration-300 uppercase mt-4"
+              className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 hover:from-cyan-500 hover:via-blue-600 hover:to-indigo-700 text-white px-6 py-2 rounded-xl font-semibold transition-all duration-300 uppercase mt-4 shadow-lg hover:shadow-[0_0_20px_rgba(34,211,238,0.4)]"
             >
               POROZMAWIAJMY
             </button>
@@ -209,7 +208,7 @@ export function Navbar() {
           <>
             {/* Invisible overlay for closing sidebar on outside click */}
             <div
-              className="fixed inset-0 z-[54]"
+              className="fixed inset-0 z-[54] bg-black/50 backdrop-blur-sm"
               onClick={closeSidebar}
             />
 
@@ -220,12 +219,12 @@ export function Navbar() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -100, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="fixed left-0 top-16 bottom-0 w-64 bg-background z-[55] overflow-y-auto"
+              className="fixed left-0 top-20 md:top-24 bottom-0 w-72 bg-black/95 backdrop-blur-xl border-r border-white/10 z-[55] overflow-y-auto"
             >
               <div className="flex flex-col h-full">
                 {/* Sidebar Navigation */}
-                <nav className="flex-1 p-4 pt-32">
-                  <ul className="space-y-1">
+                <nav className="flex-1 p-4 pt-12">
+                  <ul className="space-y-2">
                     {navItems.map((item) => (
                       <li key={item.label}>
                         {item.items ? (
@@ -233,15 +232,15 @@ export function Navbar() {
                             <button
                               onClick={() => handleSubmenuToggle(item.label)}
                               className={cn(
-                                "group w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-foreground hover:bg-accent rounded-md transition-colors",
-                                openSubmenu === item.label && "bg-accent"
+                                "group w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-300",
+                                openSubmenu === item.label && "bg-white/5 text-white"
                               )}
                             >
                               <span>{item.label}</span>
                               <ChevronRight
                                 className={cn(
-                                  "h-4 w-4 opacity-0 group-hover:opacity-100 transition-all",
-                                  openSubmenu === item.label && "rotate-90 opacity-100"
+                                  "h-4 w-4 text-gray-500 group-hover:text-white transition-all",
+                                  openSubmenu === item.label && "rotate-90 text-white"
                                 )}
                               />
                             </button>
@@ -259,7 +258,7 @@ export function Navbar() {
                                       <Link
                                         href={subItem.href}
                                         onClick={closeSidebar}
-                                        className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                                        className="block px-4 py-2 text-sm text-gray-400 hover:text-cyan-400 hover:bg-white/5 rounded-lg transition-all duration-300"
                                       >
                                         {subItem.label}
                                       </Link>
@@ -273,7 +272,7 @@ export function Navbar() {
                           <Link
                             href={item.href || "#"}
                             onClick={closeSidebar}
-                            className="block px-4 py-3 text-sm font-medium text-foreground hover:bg-accent rounded-md transition-colors"
+                            className="block px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-300"
                           >
                             {item.label}
                           </Link>
@@ -284,10 +283,10 @@ export function Navbar() {
                 </nav>
 
                 {/* Sidebar Footer */}
-                <div className="p-4 border-t border-border">
+                <div className="p-4 border-t border-white/10">
                   <button
                     onClick={closeSidebar}
-                    className="w-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 hover:from-cyan-500 hover:via-blue-600 hover:to-indigo-700 text-black px-6 py-2 rounded-lg font-semibold transition-all duration-300 uppercase"
+                    className="w-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 hover:from-cyan-500 hover:via-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 uppercase shadow-lg"
                   >
                     POROZMAWIAJMY
                   </button>

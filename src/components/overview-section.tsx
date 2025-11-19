@@ -4,8 +4,12 @@ import { motion } from "framer-motion";
 
 export function OverviewSection() {
   return (
-    <section className="min-h-screen bg-[#000000] flex flex-col items-center justify-center py-24 px-8">
-      <div className="max-w-4xl mx-auto text-center">
+    <section className="min-h-screen bg-black flex flex-col items-center justify-center py-24 px-8 relative overflow-hidden">
+      {/* Ambient Light Background */}
+      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none translate-x-1/2 translate-y-1/2" />
+
+      <div className="max-w-4xl mx-auto text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -13,7 +17,7 @@ export function OverviewSection() {
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-6">
-            <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
+            <span className="text-gradient">
               Inteligencja dla biznesu
             </span>
           </h2>
@@ -31,4 +35,3 @@ export function OverviewSection() {
     </section>
   );
 }
-
