@@ -4,7 +4,7 @@ import "./globals.css";
 import { Navbar2 } from "@/components/navbar2";
 import { NavbarProvider } from "@/components/navbar-context";
 import { LayoutContent } from "@/components/layout-content";
-import { MessageCircle } from "lucide-react";
+import { ChatWidget } from "@/components/chat-widget";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,13 +24,7 @@ export default function RootLayout({
         <NavbarProvider>
           <Navbar2 />
           <LayoutContent>{children}</LayoutContent>
-          {/* Floating Chat Button */}
-          <button
-            className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 hover:from-cyan-500 hover:via-blue-600 hover:to-indigo-700 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 z-50"
-            aria-label="Chat"
-          >
-            <MessageCircle className="w-6 h-6 text-white" />
-          </button>
+          <ChatWidget />
         </NavbarProvider>
       </body>
     </html>
