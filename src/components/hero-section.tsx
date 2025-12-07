@@ -161,25 +161,25 @@ const RotatingWaveGroup = ({
 // Slides Data
 const slides = [
   {
-    overline: "TRANSFORMACJA CYFROWA",
-    titlePrefix: "Wdrażanie",
+    overline: "INTELIGENTNA AUTOMATYZACJA",
+    titlePrefix: "",
     titleHighlight: "AI",
-    titleSuffix: "dla biznesu",
-    description: "Odkryj potencjał sztucznej inteligencji. Pomagamy firmom zintegrować najnowsze technologie AI, aby zautomatyzować procesy i zwiększyć wydajność."
+    titleSuffix: " które zwiększa Twoją sprzedaż.",
+    description: "Chatboty sprzedażowe, agenci AI, inteligentne automatyzacje i nowoczesne sklepy internetowe — działające 24/7, aby zwiększać Twoją konwersję bez powiększania zespołu"
   },
   {
     overline: "INTELIGENTNA AUTOMATYZACJA",
-    titlePrefix: "Tworzenie",
-    titleHighlight: "Agentów AI",
+    titlePrefix: "Wsparcie które działa",
+    titleHighlight: "natychmiast",
     titleSuffix: "",
-    description: "Autonomiczni agenci, którzy pracują dla Ciebie 24/7. Od obsługi klienta po skomplikowane analizy danych – nasi agenci rewolucjonizują sposób pracy."
+    description: "Agenci AI działają natychmiast, wspierając kluczowe procesy w Twojej firmie przez całą dobę."
   },
   {
     overline: "MIERZALNE WYNIKI",
-    titlePrefix: "Zwiększanie",
-    titleHighlight: "Sprzedaży",
-    titleSuffix: "",
-    description: "Wykorzystaj dane i predykcję, aby dotrzeć do właściwych klientów w odpowiednim czasie. SellGenius to klucz do rekordowych wyników sprzedaży."
+    titlePrefix: "Technologia która",
+    titleHighlight: "rośnie",
+    titleSuffix: " razem z Twoim biznesem.",
+    description: "Rozwiązania AI dopasowują się do Twoich procesów i wspierają rozwój na każdym etapie."
   }
 ];
 
