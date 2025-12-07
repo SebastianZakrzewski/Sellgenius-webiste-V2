@@ -168,7 +168,7 @@ const slides = [
     description: "Chatboty sprzedażowe, agenci AI, inteligentne automatyzacje i nowoczesne sklepy internetowe — działające 24/7, aby zwiększać Twoją konwersję bez powiększania zespołu"
   },
   {
-    overline: "INTELIGENTNA AUTOMATYZACJA",
+    overline: "WSPARCIE 24/7",
     titlePrefix: "Wsparcie które działa",
     titleHighlight: "natychmiast",
     titleSuffix: "",
