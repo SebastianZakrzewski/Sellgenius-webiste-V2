@@ -1,5 +1,5 @@
 import { HeroSection } from "@/components/hero-section";
-import { ProblemSection } from "@/components/problem-section";
+import { HowItWorksSection } from "@/components/how-it-works-section";
 import { ProductsPreviewSection } from "@/components/products-preview-section";
 import { GeniusCustomSection } from "@/components/genius-custom-section";
 import { PromoVideoSection } from "@/components/promo-video-section";
@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <main className="flex flex-col">
       <HeroSection />
-      <ProblemSection />
+      <HowItWorksSection />
       <ProductsPreviewSection />
       <GeniusCustomSection />
       <PromoVideoSection />
