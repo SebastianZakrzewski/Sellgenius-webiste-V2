@@ -14,7 +14,7 @@ const services = [
   },
   {
     title: "Automatyzacje i AI dla firm",
-    description: "Przeanalizujemy procesy w Twoim biznesie i dobierzemy narzędzia, które naprawdę mają sens. Wdrożymy rozwiązania oparte na AI i automatyzacji, które usprawnią codzienną pracę, zmniejszą koszty i pozwolą Ci odzyskać czas na rozwój firmy.",
+    description: "Przeanalizujemy procesy w Twoim biznesie i dobierzemy narzędzia, które naprawdę mają sens. Wdrożymy rozwiązania oparte na AI i automatyzacji – a ponieważ każdy projekt jest przez nas analizowany i oceniany, analityka i raportowanie są od samego początku częścią wdrożenia. Dashboards, metryki i wnioski z danych pomagają nam i Tobie weryfikować efekty na bieżąco.",
     icon: Bot,
     href: "/services/automation",
     gradient: "from-blue-500 to-indigo-600"
@@ -46,7 +46,7 @@ export function ServicesSection() {
             Jak możemy Ci <span className="text-gradient">pomóc?</span>
           </h2>
           <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
-            Najpierw przeanalizujemy, jak działa Twój biznes, potem doradzimy i dobierzemy właściwe narzędzia, a następnie zaprojektujemy i wdrożymy automatyzacje oraz rozwiązania AI, które przyniosą realne efekty.
+            Najpierw przeanalizujemy, jak działa Twój biznes, potem doradzimy i dobierzemy właściwe narzędzia, zaprojektujemy i wdrożymy automatyzacje oraz rozwiązania AI. Każde wdrożenie jest przez nas analizowane i oceniane – analityka jest więc wbudowana w proces od początku, co pozwala mierzyć realne efekty.
           </p>
         </motion.div>
 
