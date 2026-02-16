@@ -197,12 +197,6 @@ export function HeroSection() {
     };
   }, [mouseX, mouseY]);
 
-  const stats = [
-    { value: "500+", label: "firm ufa nam" },
-    { value: "98%", label: "zadowolenia klientów" },
-    { value: "3x", label: "wzrost ROI średnio" },
-  ];
-
   const trustIndicators = [
     { icon: Shield, text: "Bezpieczne dane" },
     { icon: Zap, text: "GDPR Compliant" },
@@ -414,7 +408,7 @@ export function HeroSection() {
             letterSpacing: '0.4em',
           }}
         >
-          INTELIGENCJA DLA BIZNESU.
+          Więcej sprzedaży, mniej chaosu
         </motion.p>
 
         {/* Description */}
@@ -424,30 +418,8 @@ export function HeroSection() {
           transition={{ delay: 0.6, duration: 0.8 }}
           className="text-base md:text-lg lg:text-xl text-gray-300 text-center max-w-3xl leading-relaxed mt-2 md:mt-4"
         >
-          Zwiększ sprzedaż i optymalizuj procesy dzięki zaawansowanej analityce danych.
+          Wdrażamy automatyzację, analitykę i rozwiązania AI, które realnie zwiększają konwersję.
         </motion.p>
-
-        {/* Social Proof Stats */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.5 }}
-          className="flex flex-wrap items-center justify-center gap-8 md:gap-12 mt-8 md:mt-10"
-        >
-          {stats.map((stat) => (
-            <div
-              key={stat.value}
-              className="text-center"
-            >
-              <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-gradient">
-                {stat.value}
-              </div>
-              <div className="text-xs md:text-sm text-gray-400 mt-1 uppercase tracking-wide">
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </motion.div>
 
         {/* Trust Indicators */}
         <motion.div 
