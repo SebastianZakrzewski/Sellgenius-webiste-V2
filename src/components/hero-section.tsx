@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { ArrowRight, ArrowUpRight, Shield, Zap, TrendingUp } from "lucide-react";
-import { motion, useMotionValue, useTransform, useSpring, useScroll } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring, useScroll, animate } from "framer-motion";
 
 // Color constants
 const COLORS = {
@@ -75,7 +75,8 @@ const ParametricWave = ({
   amplitude,
   color,
   direction,
-  phaseShift = 0
+  phaseShift = 0,
+  entranceDelay = 0
 }: {
   index: number;
   centerX: number;
@@ -85,6 +86,7 @@ const ParametricWave = ({
   color: string;
   direction: number;
   phaseShift?: number;
+  entranceDelay?: number;
 }) => {
   // Generate the path data for a sine wave wrapped around a circle
   // OPTIMIZATION: Reduced steps from 360 to 180 (half resolution, visually similar)
@@ -107,33 +109,44 @@ const ParametricWave = ({
     return points.join(" ");
   }, [centerX, centerY, baseRadius, amplitude, index, phaseShift]);
 
+  const pathLength = useMotionValue(0);
+
+  useEffect(() => {
+    const controls = animate(pathLength, 1, {
+      duration: 2,
+      delay: entranceDelay,
+      ease: [0.25, 0.1, 0.25, 1] // smooth ease-out at end, no snap
+    });
+    return () => controls.stop();
+  }, [entranceDelay, pathLength]);
+
   return (
     <motion.path
       d={pathData}
       stroke={color}
       strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
-      initial={{ opacity: 0 }}
+      initial={{ opacity: 0.3 }}
       animate={{ 
         opacity: [0.3, 0.6, 0.3],
-        rotate: [0, 360 * direction],
         scale: [1, 1.02, 1] 
       }}
       transition={{
-        opacity: { duration: 3 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: index * 0.05 },
-        rotate: { duration: 60 + (index % 10), repeat: Infinity, ease: "linear" },
-        scale: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }
+        opacity: { duration: 5 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: index * 0.05 },
+        scale: { duration: 12, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }
       }}
       style={{
-        originX: "50%", 
-        originY: "50%",
-        willChange: "transform, opacity" // CSS Hint for optimization
+        pathLength,
+        originX: `${centerX}px`,
+        originY: `${centerY}px`,
       }}
     />
   );
 };
 
-// Wrapper to handle rotation correctly
+// Wrapper - CSS rotation for seamless infinite loop (no 360→0 jump)
 const RotatingWaveGroup = ({ 
   children, 
   direction, 
@@ -143,18 +156,17 @@ const RotatingWaveGroup = ({
   direction: number; 
   duration: number; 
 }) => {
+  const className = direction === 1 ? "hero-wave-rotate-cw" : "hero-wave-rotate-ccw";
   return (
-    <motion.g
-      animate={{ rotate: 360 * direction }}
-      transition={{ duration: duration, repeat: Infinity, ease: "linear" }}
+    <g 
+      className={className}
       style={{ 
-        originX: "960px", 
-        originY: "800px",
-        willChange: "transform" 
+        animationDuration: `${duration}s`,
+        transformOrigin: "960px 800px",
       }} 
     >
       {children}
-    </motion.g>
+    </g>
   );
 };
 
@@ -272,7 +284,7 @@ export function HeroSection() {
               {/* Core breathing animation */}
               <motion.g
                 animate={{ scale: [0.98, 1.02, 0.98] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
                 style={{ 
                   originX: `${centerX}px`, 
                   originY: `${centerY}px`,
@@ -280,42 +292,8 @@ export function HeroSection() {
                 }}
               >
                 {/* OPTIMIZATION: Reduced number of lines per layer */}
-                {/* Layer 1: Inner high-frequency waves (Cyan) */}
-                <RotatingWaveGroup direction={1} duration={40}>
-                  {Array.from({ length: 8 }).map((_, i) => (
-                     <ParametricWave
-                      key={`inner-${i}`}
-                      index={i}
-                      centerX={centerX}
-                      centerY={centerY}
-                      baseRadius={400} // Increased from 200 to clear center for text
-                      amplitude={40}
-                      color={COLORS.cyan.primary}
-                      direction={1}
-                      phaseShift={(i / 8) * Math.PI * 2}
-                    />
-                  ))}
-                </RotatingWaveGroup>
-
-                {/* Layer 2: Middle waves (Blue) - Counter Rotating */}
-                <RotatingWaveGroup direction={-1} duration={50}>
-                  {Array.from({ length: 12 }).map((_, i) => (
-                     <ParametricWave
-                      key={`mid-${i}`}
-                      index={i}
-                      centerX={centerX}
-                      centerY={centerY}
-                      baseRadius={500} // Increased from 280
-                      amplitude={60}
-                      color={COLORS.blue.primary}
-                      direction={-1}
-                      phaseShift={(i / 12) * Math.PI * 2}
-                    />
-                  ))}
-                </RotatingWaveGroup>
-
-                {/* Layer 3: Outer large waves (Indigo/White mix) */}
-                <RotatingWaveGroup direction={1} duration={60}>
+                {/* Layer 3: Outer large waves (Indigo/White mix) - Starts FIRST */}
+                <RotatingWaveGroup direction={1} duration={180}>
                   {Array.from({ length: 16 }).map((_, i) => (
                      <ParametricWave
                       key={`outer-${i}`}
@@ -327,6 +305,43 @@ export function HeroSection() {
                       color={i % 3 === 0 ? COLORS.white.primary : COLORS.indigo.primary}
                       direction={1}
                       phaseShift={(i / 16) * Math.PI * 2}
+                      entranceDelay={0.2 + i * 0.08} // Start immediately, staggered
+                    />
+                  ))}
+                </RotatingWaveGroup>
+
+                {/* Layer 2: Middle waves (Blue) - Counter Rotating - Starts SECOND */}
+                <RotatingWaveGroup direction={-1} duration={150}>
+                  {Array.from({ length: 12 }).map((_, i) => (
+                     <ParametricWave
+                      key={`mid-${i}`}
+                      index={i}
+                      centerX={centerX}
+                      centerY={centerY}
+                      baseRadius={500} // Increased from 280
+                      amplitude={60}
+                      color={COLORS.blue.primary}
+                      direction={-1}
+                      phaseShift={(i / 12) * Math.PI * 2}
+                      entranceDelay={1.5 + i * 0.08} // Start after outer finishes
+                    />
+                  ))}
+                </RotatingWaveGroup>
+
+                {/* Layer 1: Inner high-frequency waves (Cyan) - Starts LAST */}
+                <RotatingWaveGroup direction={1} duration={120}>
+                  {Array.from({ length: 8 }).map((_, i) => (
+                     <ParametricWave
+                      key={`inner-${i}`}
+                      index={i}
+                      centerX={centerX}
+                      centerY={centerY}
+                      baseRadius={400} // Increased from 200 to clear center for text
+                      amplitude={40}
+                      color={COLORS.cyan.primary}
+                      direction={1}
+                      phaseShift={(i / 8) * Math.PI * 2}
+                      entranceDelay={2.5 + i * 0.08} // Start after middle finishes
                     />
                   ))}
                 </RotatingWaveGroup>

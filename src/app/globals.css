@@ -20,6 +20,24 @@
   }
 }
 
+/* Hero wave rotations - CSS for seamless infinite loop (no 360→0 jump) */
+@keyframes hero-wave-rotate-cw {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes hero-wave-rotate-ccw {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+.hero-wave-rotate-cw {
+  animation: hero-wave-rotate-cw linear infinite;
+  transform-origin: 960px 800px;
+}
+.hero-wave-rotate-ccw {
+  animation: hero-wave-rotate-ccw linear infinite;
+  transform-origin: 960px 800px;
+}
+
 @layer base {
   :root {
     --background: 0 0% 0%;
