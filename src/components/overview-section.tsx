@@ -101,17 +101,30 @@ export function OverviewSection() {
             </button>
           </div>
 
-          <div className="mx-auto w-full max-w-xs sm:max-w-sm lg:max-w-md">
-            <div className="aspect-[3/4] overflow-hidden rounded-2xl border border-white/20 bg-black/20 backdrop-blur-sm">
-              <Image
-                src="/images/IMG_4364 (1).jpeg"
-                alt="Zdjęcie"
-                width={1200}
-                height={1600}
-                className="h-full w-full object-cover object-bottom grayscale"
-                priority={false}
+          <div className="mx-auto w-full max-w-xs sm:max-w-sm lg:max-w-md flex flex-col items-center">
+            <div className="relative group">
+              {/* Poświata wokół zdjęcia */}
+              <div
+                className="absolute -inset-4 rounded-2xl blur-3xl transition-all duration-300 group-hover:opacity-100 opacity-75"
+                style={{
+                  background: "radial-gradient(ellipse at center, rgba(34,211,238,0.35) 0%, rgba(59,130,246,0.25) 40%, rgba(99,102,241,0.15) 70%, transparent 100%)",
+                  boxShadow: "0 0 100px rgba(34,211,238,0.25), 0 0 150px rgba(59,130,246,0.15)",
+                }}
               />
+              <div className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-white/20 bg-black/20 backdrop-blur-sm shadow-[0_0_50px_rgba(34,211,238,0.2),0_0_80px_rgba(59,130,246,0.1)]">
+                <Image
+                  src="/images/IMG_4364 (1).jpeg"
+                  alt="Sebastian Zakrzewski"
+                  width={1200}
+                  height={1600}
+                  className="h-full w-full object-cover object-bottom grayscale group-hover:grayscale-0 transition-all duration-500"
+                  priority={false}
+                />
+              </div>
             </div>
+            <p className="mt-6 text-xl font-semibold text-white tracking-wide">
+              Founder Sebastian Zakrzewski
+            </p>
           </div>
         </motion.div>
 

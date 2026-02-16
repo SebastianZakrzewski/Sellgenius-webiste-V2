@@ -29,8 +29,11 @@ export function ProductsPreviewSection() {
   ];
 
   return (
-    <section className="min-h-screen bg-black flex flex-col items-center justify-center py-24 px-8">
-      <div className="max-w-7xl mx-auto w-full">
+    <section className="min-h-screen bg-black flex flex-col items-center justify-center py-24 px-8 relative overflow-hidden">
+      {/* Ambient Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black pointer-events-none" />
+      
+      <div className="max-w-7xl mx-auto w-full relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -54,25 +57,22 @@ export function ProductsPreviewSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+              whileHover={{ y: -5 }}
+              className="group"
             >
               <Link href={product.href}>
                 <div
-                  className="relative rounded-xl flex flex-col p-6 h-full cursor-pointer shadow-xl"
-                  style={{
-                    background: `linear-gradient(to bottom, #22D3EE, #3B82F6, #22D3EE)`,
-                    boxShadow: '0 10px 40px rgba(34, 211, 238, 0.2)',
-                  }}
+                  className="relative rounded-xl flex flex-col p-6 h-full cursor-pointer border border-white/10 bg-white/5 backdrop-blur-sm transition-all duration-300 hover:border-cyan-500/50 hover:bg-white/10 hover:shadow-[0_0_30px_rgba(34,211,238,0.15)]"
                 >
-                  <h3 className="text-xl font-bold text-black mb-3">
+                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors">
                     {product.title}
                   </h3>
-                  <p className="text-black text-sm leading-relaxed flex-1 mb-4">
+                  <p className="text-gray-400 text-sm leading-relaxed flex-1 mb-4 group-hover:text-gray-300 transition-colors">
                     {product.description}
                   </p>
-                  <div className="flex items-center text-black font-semibold text-sm">
+                  <div className="flex items-center text-cyan-400 font-semibold text-sm group-hover:text-cyan-300 transition-colors">
                     Dowiedz się więcej
-                    <ArrowUpRight className="w-4 h-4 ml-2" />
+                    <ArrowUpRight className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                   </div>
                 </div>
               </Link>
