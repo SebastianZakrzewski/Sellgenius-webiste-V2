@@ -31,10 +31,12 @@
 }
 .hero-wave-rotate-cw {
   animation: hero-wave-rotate-cw linear infinite;
+  animation-delay: 5s;
   transform-origin: 960px 800px;
 }
 .hero-wave-rotate-ccw {
   animation: hero-wave-rotate-ccw linear infinite;
+  animation-delay: 5s;
   transform-origin: 960px 800px;
 }
 

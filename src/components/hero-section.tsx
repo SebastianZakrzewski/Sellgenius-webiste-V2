@@ -115,7 +115,7 @@ const ParametricWave = ({
     const controls = animate(pathLength, 1, {
       duration: 2,
       delay: entranceDelay,
-      ease: [0.25, 0.1, 0.25, 1] // smooth ease-out at end, no snap
+      ease: "linear" // stała prędkość – brak zmian podczas ładowania
     });
     return () => controls.stop();
   }, [entranceDelay, pathLength]);
@@ -134,8 +134,8 @@ const ParametricWave = ({
         scale: [1, 1.02, 1] 
       }}
       transition={{
-        opacity: { duration: 5 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: index * 0.05 },
-        scale: { duration: 12, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }
+        opacity: { duration: 5 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: entranceDelay + 2 + index * 0.05 },
+        scale: { duration: 12, repeat: Infinity, ease: "easeInOut", delay: entranceDelay + 2 + index * 0.1 }
       }}
       style={{
         pathLength,
@@ -171,7 +171,6 @@ const RotatingWaveGroup = ({
 };
 
 export function HeroSection() {
-  // Particle System - OPTIMIZATION: Reduced count from 30 to 15
   const [particles, setParticles] = useState<{ x: number; y: number; size: number; duration: number; delay: number }[]>([]);
 
   useEffect(() => {
@@ -180,7 +179,7 @@ export function HeroSection() {
       y: Math.random() * 100,
       size: Math.random() * 2 + 1,
       duration: 10 + Math.random() * 20,
-      delay: Math.random() * 5
+      delay: 5 + Math.random() * 5
     }));
     setParticles(newParticles);
   }, []);
@@ -232,7 +231,7 @@ export function HeroSection() {
         style={{
           rotateX: tiltX,
           rotateY: tiltY,
-          y // Parallax scroll
+          y
         }}
       >
         <motion.div className="w-full h-full relative">
@@ -243,7 +242,7 @@ export function HeroSection() {
                 key={`particle-${i}`} 
                 data={p} 
                 mouseX={mouseX} 
-                mouseY={mouseY} 
+                mouseY={mouseY}
               />
             ))}
           </div>
@@ -281,10 +280,10 @@ export function HeroSection() {
 
             {/* Main Logo Composition */}
             <g filter="url(#glowStrong)" style={{ transformOrigin: `${centerX}px ${centerY}px` }}>
-              {/* Core breathing animation */}
               <motion.g
+                initial={{ scale: 0.98 }}
                 animate={{ scale: [0.98, 1.02, 0.98] }}
-                transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 5 }}
                 style={{ 
                   originX: `${centerX}px`, 
                   originY: `${centerY}px`,
@@ -300,12 +299,12 @@ export function HeroSection() {
                       index={i}
                       centerX={centerX}
                       centerY={centerY}
-                      baseRadius={600} // Increased from 380
+                      baseRadius={600}
                       amplitude={50}
                       color={i % 3 === 0 ? COLORS.white.primary : COLORS.indigo.primary}
                       direction={1}
                       phaseShift={(i / 16) * Math.PI * 2}
-                      entranceDelay={0.2 + i * 0.08} // Start immediately, staggered
+                      entranceDelay={0.2 + i * 0.08}
                     />
                   ))}
                 </RotatingWaveGroup>
@@ -318,12 +317,12 @@ export function HeroSection() {
                       index={i}
                       centerX={centerX}
                       centerY={centerY}
-                      baseRadius={500} // Increased from 280
+                      baseRadius={500}
                       amplitude={60}
                       color={COLORS.blue.primary}
                       direction={-1}
                       phaseShift={(i / 12) * Math.PI * 2}
-                      entranceDelay={1.5 + i * 0.08} // Start after outer finishes
+                      entranceDelay={1.5 + i * 0.08}
                     />
                   ))}
                 </RotatingWaveGroup>
@@ -336,12 +335,12 @@ export function HeroSection() {
                       index={i}
                       centerX={centerX}
                       centerY={centerY}
-                      baseRadius={400} // Increased from 200 to clear center for text
+                      baseRadius={400}
                       amplitude={40}
                       color={COLORS.cyan.primary}
                       direction={1}
                       phaseShift={(i / 8) * Math.PI * 2}
-                      entranceDelay={2.5 + i * 0.08} // Start after middle finishes
+                      entranceDelay={2.5 + i * 0.08}
                     />
                   ))}
                 </RotatingWaveGroup>
@@ -355,9 +354,9 @@ export function HeroSection() {
                r={100}
                fill="url(#gradCyan)"
                filter="url(#glowSoft)"
-               initial={{ opacity: 0 }}
+               initial={{ opacity: 0.1, scale: 0.8 }}
                animate={{ opacity: [0.1, 0.2, 0.1], scale: [0.8, 1.2, 0.8] }}
-               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 5 }}
                style={{ willChange: "opacity, transform" }}
             />
 
@@ -376,6 +375,7 @@ export function HeroSection() {
                 duration: 8,
                 repeat: Infinity,
                 ease: "easeInOut",
+                delay: 5,
               }}
               style={{
                 left: "50%",
