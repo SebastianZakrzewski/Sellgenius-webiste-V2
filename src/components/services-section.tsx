@@ -7,21 +7,21 @@ import Link from "next/link";
 const services = [
   {
     title: "Szkolenia z AI",
-    description: "Pokażemy Ci, jak wykorzystać sztuczną inteligencję w praktyce. Bez żargonu i zbędnej teorii – tylko konkretna wiedza, którą od razu wdrożysz w swoim biznesie. Naucz się automatyzować zadania, podejmować lepsze decyzje i działać szybciej niż konkurencja.",
+    description: "Uczymy, jak wykorzystywać AI w sprzedaży i obsłudze klienta — od automatyzacji po chatboty.\n\nPraktycznie, na realnych procesach biznesowych.",
     icon: GraduationCap,
     href: "/services/training",
     gradient: "from-cyan-400 to-blue-500"
   },
   {
     title: "Automatyzacje i AI dla firm",
-    description: "Przeanalizujemy procesy w Twoim biznesie i dobierzemy narzędzia, które naprawdę mają sens. Wdrożymy rozwiązania oparte na AI i automatyzacji – a ponieważ każdy projekt jest przez nas analizowany i oceniany, analityka i raportowanie są od samego początku częścią wdrożenia. Dashboards, metryki i wnioski z danych pomagają nam i Tobie weryfikować efekty na bieżąco.",
+    description: "Tworzymy systemy, które automatyzują sprzedaż i obsługę klienta.\n\nWirtualni pracownicy AI działają 24/7, porządkują proces i dbają o każdą szansę sprzedażową. Sprawdzamy skuteczność automatyzacji i jej wpływ na wynik.",
     icon: Bot,
     href: "/services/automation",
     gradient: "from-blue-500 to-indigo-600"
   },
   {
-    title: "Budowa stron i sklepów internetowych",
-    description: "Projektujemy nowoczesne strony, sklepy internetowe i aplikacje szyte na miarę Twojego biznesu. Tworzymy również platformy e-commerce, systemy CRM i ERP – wszystko zoptymalizowane pod SEO, UX i automatyzację procesów. Technologie, które naprawdę działają na Twój wynik.",
+    title: "Strony i sklepy internetowe",
+    description: "Budujemy strony i sklepy jako element systemu sprzedaży.\n\nZintegrowane z CRM, automatyzacjami i chatbotami — realnie wspierają konwersję i mierzenie efektów.",
     icon: Globe,
     href: "/services/development",
     gradient: "from-indigo-600 to-purple-600"
@@ -76,7 +76,7 @@ export function ServicesSection() {
                       {service.title}
                     </h3>
                     
-                    <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-grow group-hover:text-gray-300 transition-colors">
+                    <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-grow group-hover:text-gray-300 transition-colors whitespace-pre-line">
                       {service.description}
                     </p>
 
